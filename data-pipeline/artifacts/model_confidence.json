@@ -1,0 +1,6 @@
+{
+  "reliable": false,
+  "reason": "Macro-F1 < 0.5. The model should be treated as a directional signal only.",
+  "macro_f1": 0.4705083249185029,
+  "critical_recall": 0.28125
+}

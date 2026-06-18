@@ -1,0 +1,30 @@
+[
+  {
+    "feature": "hour_of_day",
+    "importance": 5572
+  },
+  {
+    "feature": "day_of_week",
+    "importance": 3697
+  },
+  {
+    "feature": "event_cause",
+    "importance": 803
+  },
+  {
+    "feature": "corridor",
+    "importance": 754
+  },
+  {
+    "feature": "priority",
+    "importance": 691
+  },
+  {
+    "feature": "requires_road_closure",
+    "importance": 440
+  },
+  {
+    "feature": "is_weekend",
+    "importance": 43
+  }
+]
