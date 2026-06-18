@@ -28,7 +28,7 @@ export default function LimitationsSheet({ data }: { data: any }) {
               Transparent reporting on known biases and constraints in the predictive model.
             </SheetDescription>
           </SheetHeader>
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             
             <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
               <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
@@ -73,6 +73,16 @@ export default function LimitationsSheet({ data }: { data: any }) {
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {data.ui_precedence_rule}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
+              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
+                <span className="w-3 h-3 rounded-full bg-purple-500 shadow-sm"></span>
+                Priority Logging Skew
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Named corridors show a near 100% concentration of High priority events because BTP's standard practice treats named-corridor incidents as inherently priority-worthy. Ad-hoc and unnamed locations default to Low priority ("Non-corridor"). This is a real pattern in police logging data, not a pipeline aggregation bug.
               </p>
             </div>
 
