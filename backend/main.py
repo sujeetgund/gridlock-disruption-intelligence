@@ -56,7 +56,7 @@ async def lifespan(app: FastAPI):
             if len(map_df) > 1000:
                 # Group by severity_bucket and sample proportionally
                 frac = 1000 / len(map_df)
-                map_sample = map_df.groupby('severity_bucket', group_keys=False).apply(lambda x: x.sample(frac=frac, random_state=42))
+                map_sample = map_df.groupby('severity_bucket').sample(frac=frac, random_state=42)
             else:
                 map_sample = map_df
                 
