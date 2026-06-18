@@ -1,0 +1,178 @@
+[
+  {
+    "corridor": "Airport New South Road",
+    "total_events": 23,
+    "avg_duration": 209.38684479816425,
+    "median_duration": 1.6809531944444445,
+    "mean_severity": 34.40967826820714,
+    "high_priority_count": 23
+  },
+  {
+    "corridor": "Bannerghata Road",
+    "total_events": 57,
+    "avg_duration": 219.90040469576513,
+    "median_duration": 1.1985073055555555,
+    "mean_severity": 34.158805702622956,
+    "high_priority_count": 57
+  },
+  {
+    "corridor": "Bellary Road 1",
+    "total_events": 235,
+    "avg_duration": 73.3275097128286,
+    "median_duration": 1.0204039669444445,
+    "mean_severity": 32.818264715275994,
+    "high_priority_count": 235
+  },
+  {
+    "corridor": "Bellary Road 2",
+    "total_events": 144,
+    "avg_duration": 55.90014208652006,
+    "median_duration": 1.0304258505555557,
+    "mean_severity": 31.995264148473268,
+    "high_priority_count": 144
+  },
+  {
+    "corridor": "CBD 1",
+    "total_events": 11,
+    "avg_duration": 264.77710378222224,
+    "median_duration": 1.075249883611111,
+    "mean_severity": 38.012979626660744,
+    "high_priority_count": 11
+  },
+  {
+    "corridor": "CBD 2",
+    "total_events": 47,
+    "avg_duration": 273.02600687351065,
+    "median_duration": 1.6228258716666666,
+    "mean_severity": 35.90298157528973,
+    "high_priority_count": 47
+  },
+  {
+    "corridor": "Hennur Main Road",
+    "total_events": 34,
+    "avg_duration": 104.74992740666666,
+    "median_duration": 1.86670078,
+    "mean_severity": 41.18550959734194,
+    "high_priority_count": 34
+  },
+  {
+    "corridor": "Hosur Road",
+    "total_events": 118,
+    "avg_duration": 143.37247270711393,
+    "median_duration": 1.2177453623611112,
+    "mean_severity": 33.897002672998795,
+    "high_priority_count": 118
+  },
+  {
+    "corridor": "IRR(Thanisandra road)",
+    "total_events": 17,
+    "avg_duration": 170.94690727699347,
+    "median_duration": 1.0700303947222223,
+    "mean_severity": 36.817834567326365,
+    "high_priority_count": 17
+  },
+  {
+    "corridor": "Magadi Road",
+    "total_events": 115,
+    "avg_duration": 57.45889803636474,
+    "median_duration": 1.0955560608333335,
+    "mean_severity": 30.67962872546722,
+    "high_priority_count": 115
+  },
+  {
+    "corridor": "Mysore Road",
+    "total_events": 348,
+    "avg_duration": 48.595551662025066,
+    "median_duration": 0.8509913620833334,
+    "mean_severity": 34.338768748946094,
+    "high_priority_count": 346
+  },
+  {
+    "corridor": "Non-corridor",
+    "total_events": 1223,
+    "avg_duration": 135.36496303992845,
+    "median_duration": 1.2467678702777778,
+    "mean_severity": 35.289729831481196,
+    "high_priority_count": 4
+  },
+  {
+    "corridor": "ORR East 1",
+    "total_events": 96,
+    "avg_duration": 133.90574846499422,
+    "median_duration": 1.1918180775,
+    "mean_severity": 31.84356580759196,
+    "high_priority_count": 96
+  },
+  {
+    "corridor": "ORR East 2",
+    "total_events": 39,
+    "avg_duration": 58.91958590118233,
+    "median_duration": 0.8804199619444445,
+    "mean_severity": 30.82399652100511,
+    "high_priority_count": 39
+  },
+  {
+    "corridor": "ORR North 1",
+    "total_events": 87,
+    "avg_duration": 93.04275818570882,
+    "median_duration": 1.1962680052777779,
+    "mean_severity": 33.13555265158391,
+    "high_priority_count": 87
+  },
+  {
+    "corridor": "ORR North 2",
+    "total_events": 80,
+    "avg_duration": 74.48299169001389,
+    "median_duration": 1.1061432554166668,
+    "mean_severity": 30.346316298430473,
+    "high_priority_count": 80
+  },
+  {
+    "corridor": "ORR West 1",
+    "total_events": 79,
+    "avg_duration": 110.4999801032841,
+    "median_duration": 1.2171736272222222,
+    "mean_severity": 30.5157750845945,
+    "high_priority_count": 79
+  },
+  {
+    "corridor": "Old Airport Road",
+    "total_events": 41,
+    "avg_duration": 80.64445855420054,
+    "median_duration": 1.1656369761111112,
+    "mean_severity": 30.990665564404758,
+    "high_priority_count": 41
+  },
+  {
+    "corridor": "Old Madras Road",
+    "total_events": 75,
+    "avg_duration": 103.05550348684073,
+    "median_duration": 0.8064540663888888,
+    "mean_severity": 29.460850132658738,
+    "high_priority_count": 75
+  },
+  {
+    "corridor": "Tumkur Road",
+    "total_events": 228,
+    "avg_duration": 22.8106706269749,
+    "median_duration": 0.6671635277777779,
+    "mean_severity": 28.468149666168003,
+    "high_priority_count": 224
+  },
+  {
+    "corridor": "Varthur Road",
+    "total_events": 34,
+    "avg_duration": 52.1197468853268,
+    "median_duration": 1.0161334131944444,
+    "mean_severity": 30.39212962096285,
+    "high_priority_count": 34
+  },
+  {
+    "corridor": "West of Chord Road",
+    "total_events": 61,
+    "avg_duration": 79.73552793964936,
+    "median_duration": 1.0173445355555555,
+    "mean_severity": 32.542965198872906,
+    "high_priority_count": 61
+  }
+]
