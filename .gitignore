@@ -4,3 +4,5 @@ __pycache__/
 *.csv
 *.png
 .DS_Store
+.agents/
+skills-lock.json
