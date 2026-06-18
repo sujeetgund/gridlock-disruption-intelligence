@@ -40,7 +40,7 @@ export default function SimulateDisruptionForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       event_cause: "vehicle_breakdown",
-      corridor: "ORR",
+      corridor: "ORR North 1",
       priority: "Medium",
       requires_road_closure: false,
       hour_of_day: 14,
@@ -117,11 +117,14 @@ export default function SimulateDisruptionForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="ORR">ORR</SelectItem>
-                          <SelectItem value="Mysuru Road">Mysuru Road</SelectItem>
+                          <SelectItem value="ORR North 1">ORR North 1</SelectItem>
+                          <SelectItem value="ORR East 1">ORR East 1</SelectItem>
+                          <SelectItem value="Mysore Road">Mysore Road</SelectItem>
                           <SelectItem value="Hosur Road">Hosur Road</SelectItem>
-                          <SelectItem value="Tumakuru Road">Tumakuru Road</SelectItem>
-                          <SelectItem value="Bellary Road">Bellary Road</SelectItem>
+                          <SelectItem value="Tumkur Road">Tumkur Road</SelectItem>
+                          <SelectItem value="Bellary Road 1">Bellary Road 1</SelectItem>
+                          <SelectItem value="CBD 1">CBD 1</SelectItem>
+                          <SelectItem value="Hennur Main Road">Hennur Main Road</SelectItem>
                           <SelectItem value="Non-corridor">Non-corridor</SelectItem>
                         </SelectContent>
                       </Select>

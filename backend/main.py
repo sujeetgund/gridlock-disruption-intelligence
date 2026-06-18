@@ -44,7 +44,9 @@ async def lifespan(app: FastAPI):
         # Precompute median duration by cause + corridor
         valid_df = df.dropna(subset=['event_duration_hours'])
         app_data['median_duration_combo'] = valid_df.groupby(['event_cause', 'corridor'])['event_duration_hours'].median().to_dict()
+        app_data['count_combo'] = valid_df.groupby(['event_cause', 'corridor']).size().to_dict()
         app_data['median_duration_cause'] = valid_df.groupby('event_cause')['event_duration_hours'].median().to_dict()
+        app_data['count_cause'] = valid_df.groupby('event_cause').size().to_dict()
         
         # Precompute Map Sample (Stratified by severity_bucket)
         if 'severity_bucket' in df.columns:

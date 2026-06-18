@@ -12,6 +12,7 @@ interface PredictResponse {
     reliable: boolean;
     reason: string;
   };
+  fallback_status: string;
 }
 
 export default function ResultCard({ result }: { result: PredictResponse }) {
@@ -71,6 +72,9 @@ export default function ResultCard({ result }: { result: PredictResponse }) {
               <div className="text-sm font-medium">Clearance Time</div>
               <div className="text-2xl font-bold font-mono text-foreground mt-1">
                 {result.predicted_duration_hours} <span className="text-sm font-normal text-muted-foreground">hrs median</span>
+              </div>
+              <div className="mt-2 text-[10px] text-muted-foreground/80 leading-tight">
+                {result.fallback_status}
               </div>
             </div>
           </div>

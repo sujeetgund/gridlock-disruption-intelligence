@@ -26,16 +26,26 @@ def predict_severity(req: PredictRequest):
     corr = req.corridor
     
     med_combo = app_data.get('median_duration_combo', {})
+    count_combo = app_data.get('count_combo', {})
     med_cause = app_data.get('median_duration_cause', {})
+    count_cause = app_data.get('count_cause', {})
     
     # Lookup tuple key
     combo_key = (cause, corr)
     
+    fallback_status = ""
     if combo_key in med_combo:
         predicted_duration = med_combo[combo_key]
+        n_events = count_combo.get(combo_key, 0)
+        fallback_status = f"Based on {n_events} historical {cause} events on {corr}"
     else:
         # Fallback to overall cause median, or 1.0 hr if completely unknown
         predicted_duration = med_cause.get(cause, 1.0)
+        n_events = count_cause.get(cause, 0)
+        if n_events > 0:
+            fallback_status = f"Based on generic {cause} median ({n_events} total events) due to insufficient corridor history"
+        else:
+            fallback_status = "Default fallback (no historical data)"
         
     # 2. Rule Engine - Structural UI Precedence Bucket
     display_bucket = get_bucket_from_duration(predicted_duration)
@@ -89,5 +99,6 @@ def predict_severity(req: PredictRequest):
         recommended_officers=recommended_officers,
         diversion_required=diversion_required,
         model_confidence=app_data.get('model_confidence', {}),
+        fallback_status=fallback_status,
         severity_score=corr_stats['mean_severity'] if corr_stats else 0.0
     )

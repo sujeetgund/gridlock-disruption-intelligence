@@ -27,8 +27,8 @@ export default function MapView({ events }: { events: MapEvent[] }) {
   const center: [number, number] = [12.9716, 77.5946];
 
   return (
-    <div className="w-full h-[500px] rounded-lg overflow-hidden border">
-      <MapContainer center={center} zoom={11} className="w-full h-full" scrollWheelZoom={false}>
+    <div className="relative w-full h-[500px] rounded-lg overflow-hidden border">
+      <MapContainer center={center} zoom={11} className="w-full h-full z-0" scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
@@ -37,13 +37,11 @@ export default function MapView({ events }: { events: MapEvent[] }) {
           <CircleMarker
             key={i}
             center={[event.latitude, event.longitude]}
-            pathOptions={{ 
-              color: severityColors[event.severity_bucket] || severityColors.Unknown,
-              fillColor: severityColors[event.severity_bucket] || severityColors.Unknown,
-              fillOpacity: 0.6,
-              weight: 1
-            }}
-            radius={5}
+            color={severityColors[event.severity_bucket] || severityColors.Unknown}
+            fillColor={severityColors[event.severity_bucket] || severityColors.Unknown}
+            fillOpacity={0.7}
+            weight={2}
+            radius={6}
           >
             <Popup>
               <div className="flex flex-col gap-1">
@@ -59,6 +57,17 @@ export default function MapView({ events }: { events: MapEvent[] }) {
           </CircleMarker>
         ))}
       </MapContainer>
+      
+      {/* Map Legend */}
+      <div className="absolute bottom-4 right-4 z-10 bg-background/95 backdrop-blur border p-3 rounded-md shadow-md text-sm flex flex-col gap-2">
+        <div className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-1">Severity</div>
+        {Object.entries(severityColors).map(([bucket, color]) => (
+          <div key={bucket} className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }}></span>
+            <span>{bucket}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

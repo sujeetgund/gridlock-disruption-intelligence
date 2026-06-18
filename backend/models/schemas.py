@@ -16,6 +16,7 @@ class PredictResponse(BaseModel):
     recommended_officers: int
     diversion_required: bool
     model_confidence: dict
+    fallback_status: str
     
     # Exposing the numeric score purely for map sorting or advanced rendering, not primary UI
     severity_score: float 
