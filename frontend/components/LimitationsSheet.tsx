@@ -20,55 +20,63 @@ export default function LimitationsSheet({ data }: { data: any }) {
         <Info className="mr-2 h-4 w-4 text-primary" />
         Data Limitations
       </SheetTrigger>
-      <SheetContent side="bottom" className="sm:max-w-none h-[400px]">
-        <SheetHeader>
-          <SheetTitle>Data Limitations & Explainability</SheetTitle>
-          <SheetDescription>
-            Transparent reporting on known biases and constraints in the predictive model.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="grid gap-6 py-6 md:grid-cols-3">
-          
-          <div className="flex flex-col gap-2">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-red-500"></span>
-              Planned Events Gap
-            </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {data.planned_events_gap}
-            </p>
-          </div>
+      <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto">
+        <div className="max-w-5xl mx-auto w-full pt-4 pb-8">
+          <SheetHeader className="mb-8">
+            <SheetTitle className="text-2xl">Data Limitations & Explainability</SheetTitle>
+            <SheetDescription className="text-base">
+              Transparent reporting on known biases and constraints in the predictive model.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid gap-8 md:grid-cols-3">
+            
+            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
+              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
+                <span className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></span>
+                Planned Events Gap
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {data.planned_events_gap}
+              </p>
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-              ML Model Status
-            </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {data.ml_model_status?.reason}
-            </p>
-            <div className="mt-2 text-xs bg-muted/50 rounded p-2 grid grid-cols-2 gap-2">
-              <div>
-                <span className="block text-muted-foreground">Reliable</span>
-                <span className="font-medium">{data.ml_model_status?.reliable ? 'Yes' : 'No'}</span>
-              </div>
-              <div>
-                <span className="block text-muted-foreground">Macro-F1</span>
-                <span className="font-medium">{(data.ml_model_status?.macro_f1 || 0).toFixed(2)}</span>
+            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
+              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
+                <span className="w-3 h-3 rounded-full bg-amber-500 shadow-sm"></span>
+                ML Model Status
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {data.ml_model_status?.reason}
+              </p>
+              <div className="mt-auto pt-4 text-sm bg-background border rounded-md p-3 grid grid-cols-2 gap-4 shadow-sm">
+                <div>
+                  <span className="block text-muted-foreground mb-1 text-xs uppercase tracking-wider">Reliable</span>
+                  <span className="font-medium flex items-center gap-1">
+                    {data.ml_model_status?.reliable ? (
+                      <span className="text-green-600">Yes</span>
+                    ) : (
+                      <span className="text-amber-600">No</span>
+                    )}
+                  </span>
+                </div>
+                <div>
+                  <span className="block text-muted-foreground mb-1 text-xs uppercase tracking-wider">Macro-F1</span>
+                  <span className="font-medium">{(data.ml_model_status?.macro_f1 || 0).toFixed(2)}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              UI Precedence Rule
-            </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {data.ui_precedence_rule}
-            </p>
-          </div>
+            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
+              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
+                <span className="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span>
+                UI Precedence Rule
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {data.ui_precedence_rule}
+              </p>
+            </div>
 
+          </div>
         </div>
       </SheetContent>
     </Sheet>

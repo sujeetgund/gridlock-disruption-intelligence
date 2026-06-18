@@ -84,7 +84,7 @@ export default function SimulateDisruptionForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Event Cause</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select cause" />
@@ -110,7 +110,7 @@ export default function SimulateDisruptionForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Corridor</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select corridor" />
@@ -138,7 +138,7 @@ export default function SimulateDisruptionForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Priority</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select priority" />
@@ -162,10 +162,21 @@ export default function SimulateDisruptionForm() {
                   name="hour_of_day"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Hour (0-23)</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
+                      <FormLabel>Time of Day</FormLabel>
+                      <Select onValueChange={(val) => field.onChange(Number(val))} defaultValue={String(field.value)} value={String(field.value)}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select hour" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-[200px]">
+                          {Array.from({ length: 24 }).map((_, i) => (
+                            <SelectItem key={i} value={String(i)}>
+                              {i === 0 ? "12:00 AM" : i < 12 ? `${i}:00 AM` : i === 12 ? "12:00 PM" : `${i - 12}:00 PM`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -175,10 +186,23 @@ export default function SimulateDisruptionForm() {
                   name="day_of_week"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Day (0=Mon, 6=Sun)</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
+                      <FormLabel>Day of Week</FormLabel>
+                      <Select onValueChange={(val) => field.onChange(Number(val))} defaultValue={String(field.value)} value={String(field.value)}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select day" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="0">Monday</SelectItem>
+                          <SelectItem value="1">Tuesday</SelectItem>
+                          <SelectItem value="2">Wednesday</SelectItem>
+                          <SelectItem value="3">Thursday</SelectItem>
+                          <SelectItem value="4">Friday</SelectItem>
+                          <SelectItem value="5">Saturday</SelectItem>
+                          <SelectItem value="6">Sunday</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

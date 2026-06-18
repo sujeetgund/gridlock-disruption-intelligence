@@ -15,6 +15,16 @@ interface PredictResponse {
   fallback_status: string;
 }
 
+function formatDuration(hours: number) {
+  if (hours < 1) {
+    return `${Math.round(hours * 60)} mins`;
+  }
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  if (m === 0) return `${h} hr${h > 1 ? 's' : ''}`;
+  return `${h} hr${h > 1 ? 's' : ''} ${m} mins`;
+}
+
 export default function ResultCard({ result }: { result: PredictResponse }) {
   if (!result) return null;
 
@@ -71,7 +81,7 @@ export default function ResultCard({ result }: { result: PredictResponse }) {
             <div>
               <div className="text-sm font-medium">Clearance Time</div>
               <div className="text-2xl font-bold font-mono text-foreground mt-1">
-                {result.predicted_duration_hours} <span className="text-sm font-normal text-muted-foreground">hrs median</span>
+                {formatDuration(result.predicted_duration_hours)} <span className="text-sm font-normal text-muted-foreground">median</span>
               </div>
               <div className="mt-2 text-[10px] text-muted-foreground/80 leading-tight">
                 {result.fallback_status}
