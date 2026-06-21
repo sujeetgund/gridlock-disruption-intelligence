@@ -1,0 +1,13 @@
+{
+  "total_corridors": 22,
+  "insufficient_history_corridors": 1,
+  "trend_eligible_corridors": 20,
+  "system_wide_trend": {
+    "initial_mean_abs_error": 1.015,
+    "final_mean_abs_error": 1.0,
+    "error_pct_change": -1.5,
+    "initial_mean_bias": -0.045,
+    "final_mean_bias": -0.04,
+    "status": "flat"
+  }
+}

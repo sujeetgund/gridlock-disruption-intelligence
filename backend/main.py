@@ -6,7 +6,7 @@ import json
 import joblib
 import os
 
-from .routers import events, predict
+from .routers import events, predict, calibration
 
 # In-memory storage for loaded artifacts
 app_data = {}
@@ -42,7 +42,17 @@ async def lifespan(app: FastAPI):
         with open(pred_cutoffs_path, 'r') as f:
             app_data['predictive_cutoffs'] = json.load(f)
             
-    # 4. Precompute median duration lookup table by cause + corridor
+    # 4. Load Calibration Ledger and Summary
+    cal_ledger_path = os.path.join(artifacts_dir, 'calibration_ledger.parquet')
+    if os.path.exists(cal_ledger_path):
+        app_data['calibration_ledger'] = pd.read_parquet(cal_ledger_path)
+        
+    cal_summary_path = os.path.join(artifacts_dir, 'calibration_summary.json')
+    if os.path.exists(cal_summary_path):
+        with open(cal_summary_path, 'r') as f:
+            app_data['calibration_summary'] = json.load(f)
+            
+    # 5. Precompute median duration lookup table by cause + corridor
     clean_data_path = os.path.join(artifacts_dir, 'cleaned_data.parquet')
     if os.path.exists(clean_data_path):
         df = pd.read_parquet(clean_data_path)
@@ -98,6 +108,7 @@ app.add_middleware(
 
 app.include_router(events.router, prefix="/api")
 app.include_router(predict.router, prefix="/api")
+app.include_router(calibration.router, prefix="/api")
 
 @app.get("/")
 def read_root():

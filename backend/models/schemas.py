@@ -30,6 +30,30 @@ class PredictAtReportResponse(BaseModel):
     predicted_score: float
     contributing_factors: dict
 
+class CalibrationLedgerEntry(BaseModel):
+    incident_seq_num: int
+    timestamp: str
+    predicted_bucket: str
+    severity_bucket: str
+    raw_abs_error: float
+    raw_bias: float
+    rolling_error: float
+    rolling_bias: float
+
+class CalibrationSystemTrend(BaseModel):
+    initial_mean_abs_error: float
+    final_mean_abs_error: float
+    error_pct_change: float
+    initial_mean_bias: float
+    final_mean_bias: float
+    status: str
+
+class CalibrationSummary(BaseModel):
+    total_corridors: int
+    insufficient_history_corridors: int
+    trend_eligible_corridors: int
+    system_wide_trend: CalibrationSystemTrend
+
 
 class MapEvent(BaseModel):
     latitude: float
