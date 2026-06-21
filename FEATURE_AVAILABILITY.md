@@ -66,6 +66,7 @@ To build a predictive score that avoids label leakage, we must only use fields t
 **3. Priority (`priority`) -> INCLUDE**
 - **Availability:** Assigned exactly at the moment of logging.
 - **Evidence:** Out of 222 historical events modified within 1 minute of their `created_date` (i.e., immediately upon creation with virtually no triage window), 100% of them (222/222) possessed a non-null `priority` (122 High, 100 Low). This confirms priority is populated simultaneously with event creation.
+- **Data Quality Note:** The full 8,173-row dataset contains exclusively 'High' (5030), 'Low' (3141), and NaN (2) values. The 2 records with `NaN` are silently assigned to the 'otherwise' bucket (0.3) by the binary encoder, effectively treating them as 'Low' priority.
 - **Decision:** Included in predictive scoring.
 
 **4. Corridor Frequency (Derived from `corridor`) -> INCLUDE**
@@ -74,3 +75,14 @@ To build a predictive score that avoids label leakage, we must only use fields t
 
 ## Conclusion & Action
 The Phase 1 Predictive Severity Score will rely exclusively on **Priority** and **Corridor Frequency**, renormalizing the weights to 57.14% and 42.86% respectively, completely eliminating `duration` and `requires_road_closure` to ensure strict real-time validity.
+
+### Note on Pre-Processing and Bucketing
+The raw predictive score (0-100) intentionally omits a `log1p` transformation and population-based quantile bucketing.
+- **Evidence:** Analysis of the full 8,173 records revealed extremely low cardinality for the predictive score (only 25 unique values). The formula relies solely on two inputs (a binary priority and a fixed corridor frequency), meaning thousands of records inevitably tie at exact thresholds. Using strict percentiles caused massive tied clusters to arbitrarily fall into adjacent buckets.
+- **Decision (Natural Breaks Methodology):** To guarantee deterministic classification and ensure that no identically-scored events straddle a bucket boundary, we implemented strict, absolute numerical thresholds (`[60.0, 61.0, 66.0]`). These cutoffs were explicitly placed at the largest natural gaps in the unique score distribution:
+  - **Cutoff 66.0:** Placed in the 1.83-point gap between `65.17` and `67.00` (separating Critical from High).
+  - **Cutoff 61.0:** Placed in the 1.11-point gap between `60.88` and `61.99` (separating High from Medium).
+  - **Cutoff 60.0:** Placed precisely to isolate the single largest tied cluster (`60.00`, 3,137 records) from everything below it (`59.66`), serving as the stable boundary for the Medium bucket.
+
+> [!WARNING]
+> Because the predictive severity score is stripped down to just two report-time fields, its resolution is inherently coarse. Two incidents on the exact same corridor with the identical priority will always receive the identical predicted bucket. This is an intended consequence of strictly avoiding post-resolution label leakage. In Phase 2, if the calibration ledger shows that the predictive score rarely isolates extreme events natively, it is due to this structural coarseness rather than a model failure.

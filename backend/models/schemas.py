@@ -21,6 +21,16 @@ class PredictResponse(BaseModel):
     # Exposing the numeric score purely for map sorting or advanced rendering, not primary UI
     severity_score: float 
 
+class PredictAtReportRequest(BaseModel):
+    priority: str
+    corridor: str
+
+class PredictAtReportResponse(BaseModel):
+    predicted_bucket: str
+    predicted_score: float
+    contributing_factors: dict
+
+
 class MapEvent(BaseModel):
     latitude: float
     longitude: float

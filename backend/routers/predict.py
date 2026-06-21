@@ -102,3 +102,18 @@ def predict_severity(req: PredictRequest):
         fallback_status=fallback_status,
         severity_score=corr_stats['mean_severity'] if corr_stats else 0.0
     )
+
+from ..models.schemas import PredictAtReportRequest, PredictAtReportResponse
+from ..scoring.predictive import calculate_predictive_score
+
+@router.post("/predict-at-report", response_model=PredictAtReportResponse)
+def predict_at_report(req: PredictAtReportRequest):
+    from ..main import app_data
+    bucket, score, factors = calculate_predictive_score(req.priority, req.corridor, app_data)
+    
+    return PredictAtReportResponse(
+        predicted_bucket=bucket,
+        predicted_score=score,
+        contributing_factors=factors
+    )
+

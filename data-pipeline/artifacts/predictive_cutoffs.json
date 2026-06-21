@@ -1,0 +1,33 @@
+{
+  "thresholds": [
+    60.0,
+    61.0,
+    66.0
+  ],
+  "c_min": 26.0,
+  "c_max": 3144.0,
+  "corridor_counts": {
+    "Non-corridor": 3144,
+    "Mysore Road": 743,
+    "Bellary Road 1": 610,
+    "Tumkur Road": 458,
+    "Bellary Road 2": 379,
+    "Hosur Road": 298,
+    "ORR North 1": 275,
+    "Old Madras Road": 263,
+    "Magadi Road": 245,
+    "ORR East 1": 244,
+    "ORR North 2": 235,
+    "Bannerghata Road": 209,
+    "ORR East 2": 187,
+    "West of Chord Road": 174,
+    "ORR West 1": 168,
+    "CBD 2": 104,
+    "Hennur Main Road": 96,
+    "IRR(Thanisandra road)": 95,
+    "Varthur Road": 77,
+    "Old Airport Road": 76,
+    "Airport New South Road": 67,
+    "CBD 1": 26
+  }
+}

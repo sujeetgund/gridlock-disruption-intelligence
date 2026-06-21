@@ -36,6 +36,12 @@ async def lifespan(app: FastAPI):
             # Find the max high_priority_count to scale resource rules
             app_data['max_high_priority_events'] = max([c.get('high_priority_count', 0) for c in app_data['corridors']])
             
+    # 3.5 Load Predictive Cutoffs
+    pred_cutoffs_path = os.path.join(artifacts_dir, 'predictive_cutoffs.json')
+    if os.path.exists(pred_cutoffs_path):
+        with open(pred_cutoffs_path, 'r') as f:
+            app_data['predictive_cutoffs'] = json.load(f)
+            
     # 4. Precompute median duration lookup table by cause + corridor
     clean_data_path = os.path.join(artifacts_dir, 'cleaned_data.parquet')
     if os.path.exists(clean_data_path):
