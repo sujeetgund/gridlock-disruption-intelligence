@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Define the color mapping for the severity buckets
+// Define the color mapping for the severity buckets using BI palette
 const severityColors: Record<string, string> = {
-  Low: "#22c55e", // green-500
-  Medium: "#eab308", // yellow-500
-  High: "#f97316", // orange-500
-  Critical: "#ef4444", // red-500
-  Unknown: "#6b7280" // gray-500
+  Low: "#1f7f51", // primary-green
+  Medium: "#002aff", // primary
+  High: "#ea0201", // primary-red-hover
+  Critical: "#e51716", // primary-red
+  Unknown: "#71717a" // text-muted
 };
 
 interface MapEvent {
@@ -27,11 +27,11 @@ export default function MapView({ events }: { events: MapEvent[] }) {
   const center: [number, number] = [12.9716, 77.5946];
 
   return (
-    <div className="relative w-full h-[500px] rounded-lg overflow-hidden border">
-      <MapContainer center={center} zoom={11} className="w-full h-full z-0" scrollWheelZoom={false}>
+    <div className="relative w-full h-full min-h-[500px]">
+      <MapContainer center={center} zoom={11} className="w-full h-full min-h-[500px] z-0" scrollWheelZoom={true}>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://carto.com/">CartoDB</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
         {events.map((event, i) => (
           <CircleMarker
@@ -39,16 +39,16 @@ export default function MapView({ events }: { events: MapEvent[] }) {
             center={[event.latitude, event.longitude]}
             color={severityColors[event.severity_bucket] || severityColors.Unknown}
             fillColor={severityColors[event.severity_bucket] || severityColors.Unknown}
-            fillOpacity={0.7}
-            weight={2}
-            radius={6}
+            fillOpacity={0.8}
+            weight={1}
+            radius={7}
           >
             <Popup>
-              <div className="flex flex-col gap-1">
-                <strong className="capitalize">{event.cause.replace("_", " ")}</strong>
-                <span className="text-xs text-muted-foreground">{event.corridor}</span>
+              <div className="flex flex-col gap-1 font-serif">
+                <strong className="capitalize text-[14px]">{event.cause.replace("_", " ")}</strong>
+                <span className="text-[12px] text-muted-foreground">{event.corridor}</span>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: severityColors[event.severity_bucket] || severityColors.Unknown, color: "white" }}>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-[2px]" style={{ backgroundColor: severityColors[event.severity_bucket] || severityColors.Unknown, color: "white" }}>
                     {event.severity_bucket}
                   </span>
                 </div>
@@ -59,12 +59,12 @@ export default function MapView({ events }: { events: MapEvent[] }) {
       </MapContainer>
       
       {/* Map Legend */}
-      <div className="absolute bottom-4 right-4 z-10 bg-background/95 backdrop-blur border p-3 rounded-md shadow-md text-sm flex flex-col gap-2">
-        <div className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-1">Severity</div>
+      <div className="absolute bottom-6 right-6 z-10 bg-background border border-border p-4 shadow-[rgba(0,0,0,0.1)_0px_4px_12px] font-serif flex flex-col gap-3 rounded-[2px]">
+        <div className="font-bold text-[12px] uppercase tracking-wider text-foreground mb-1">Severity</div>
         {Object.entries(severityColors).map(([bucket, color]) => (
-          <div key={bucket} className="flex items-center gap-2">
+          <div key={bucket} className="flex items-center gap-3">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }}></span>
-            <span>{bucket}</span>
+            <span className="text-[14px] text-foreground font-normal">{bucket}</span>
           </div>
         ))}
       </div>

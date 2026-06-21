@@ -39,43 +39,60 @@ export default async function DashboardPage() {
   const limitationsData = await getLimitationsData();
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 h-16 flex items-center">
-          <h1 className="text-xl font-bold tracking-tight">Gridlock Disruption Intelligence</h1>
+    <div className="min-h-screen bg-background font-serif text-foreground">
+      {/* Masthead */}
+      <header className="w-full bg-background pt-8 pb-4 border-b-4 border-foreground">
+        <div className="max-w-[1308px] mx-auto px-6 flex flex-col items-center justify-center">
+          <h1 className="text-[36px] md:text-[48px] lg:text-[56px] font-black tracking-tighter text-foreground uppercase text-center leading-none mb-4 mt-2">
+            GRIDLOCK DISRUPTION INTELLIGENCE
+          </h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 space-y-10">
+      <main className="max-w-[1308px] mx-auto px-6 py-8 space-y-12">
         
         {/* Top Section: Map & Leaderboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <section className="lg:col-span-2 space-y-4">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight">Live Disruption Map</h2>
-              <p className="text-muted-foreground">Stratified sample of critical events across Bengaluru.</p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <section className="lg:col-span-8 flex flex-col">
+            <div className="mb-4 border-b border-border pb-2">
+              <h2 className="text-[28px] font-normal leading-[1.2] text-foreground">
+                Live Disruption Map
+              </h2>
+              <p className="text-[14px] text-muted-foreground mt-1">
+                Stratified sample of critical events across Bengaluru.
+              </p>
             </div>
-            <Suspense fallback={<div className="w-full h-[500px] bg-muted animate-pulse rounded-lg"></div>}>
-              <MapSection />
+            <Suspense fallback={<div className="w-full h-[500px] bg-muted animate-pulse rounded-[2px]"></div>}>
+              <div className="flex-1 min-h-[500px] bi-card p-0 overflow-hidden">
+                <MapSection />
+              </div>
             </Suspense>
           </section>
 
-          <section className="space-y-4">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight">Corridor Risk Index</h2>
-              <p className="text-muted-foreground">Ranked by severity & high priority events.</p>
+          <section className="lg:col-span-4 flex flex-col">
+            <div className="mb-4 border-b border-border pb-2">
+              <h2 className="text-[28px] font-normal leading-[1.2] text-foreground">
+                Corridor Risk Index
+              </h2>
+              <p className="text-[14px] text-muted-foreground mt-1">
+                Ranked by severity & high priority concentration.
+              </p>
             </div>
-            <Suspense fallback={<div className="w-full h-[400px] bg-muted animate-pulse rounded-lg"></div>}>
+            <Suspense fallback={<div className="w-full h-[400px] bg-muted animate-pulse rounded-[2px]"></div>}>
               <LeaderboardSection />
             </Suspense>
           </section>
         </div>
 
         {/* Bottom Section: Simulation Engine */}
-        <section className="space-y-4 pt-6 border-t">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Response Recommendation Engine</h2>
-            <p className="text-muted-foreground">Simulate an event to calculate required resources based on historical corridor precedence.</p>
+        <section className="pt-8 border-t-[4px] border-foreground">
+          <div className="mb-6">
+            <h2 className="text-[36px] font-bold leading-[1.2] tracking-tight">
+              Response Recommendation Engine
+            </h2>
+            <p className="text-[16px] text-muted-foreground mt-2 max-w-3xl">
+              Simulate an event to calculate required resources based on historical corridor precedence and current traffic patterns.
+            </p>
           </div>
           <SimulateDisruptionForm />
         </section>

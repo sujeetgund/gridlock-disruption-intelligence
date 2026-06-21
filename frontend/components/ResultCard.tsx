@@ -31,70 +31,70 @@ export default function ResultCard({ result }: { result: PredictResponse }) {
   // Derive visual class for the primary badge based on bucket
   const getBadgeVariant = (bucket: string) => {
     switch(bucket) {
-      case "Critical": return "bg-red-600 hover:bg-red-700 text-white border-red-600";
-      case "High": return "bg-orange-500 hover:bg-orange-600 text-white border-orange-500";
-      case "Medium": return "bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500";
-      case "Low": return "bg-green-500 hover:bg-green-600 text-white border-green-500";
-      default: return "bg-gray-500 text-white";
+      case "Critical": return "bg-[#e51716] text-white";
+      case "High": return "bg-[#ea0201] text-white";
+      case "Medium": return "bg-[#31313b] text-white";
+      case "Low": return "bg-[#1f7f51] text-white";
+      default: return "bg-[#71717a] text-white";
     }
   };
 
   return (
-    <Card className="w-full shadow-md border-primary/10">
-      <CardHeader className="pb-3 border-b bg-muted/20">
-        <CardTitle className="text-lg flex items-center gap-2">
+    <div className="bi-card p-0 flex flex-col h-full bg-[#fafafa]">
+      <div className="pb-4 border-b border-border p-6 bg-background">
+        <h3 className="text-[20px] font-bold text-foreground flex items-center gap-2">
           <ShieldAlert className="w-5 h-5 text-primary" />
           Recommended Response
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="text-[14px] text-muted-foreground mt-1">
           Based on historical corridor metrics and event type precedence.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-6">
+        </p>
+      </div>
+      <div className="p-6 flex-1 flex flex-col">
         
         {/* Precedence UI: Strict visual hierarchy */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8">
           {/* Primary Badge */}
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Operational Severity</span>
-            <Badge variant="outline" className={`text-xl px-4 py-1.5 shadow-sm ${getBadgeVariant(result.display_severity_bucket)}`}>
+            <span className="text-[12px] text-muted-foreground font-bold uppercase tracking-wider">Operational Severity</span>
+            <span className={`inline-flex items-center px-4 py-1.5 rounded-[2px] font-serif text-[16px] font-bold ${getBadgeVariant(result.display_severity_bucket)}`}>
               {result.display_severity_bucket}
-            </Badge>
+            </span>
           </div>
           
           {/* Secondary Badge (Model Read) */}
           <div className="flex flex-col gap-1 mt-2 md:mt-0 md:ml-auto md:items-end">
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              {!result.model_confidence.reliable && <AlertCircle className="w-3 h-3 text-amber-500" />}
+            <span className="text-[12px] text-muted-foreground flex items-center gap-1">
+              {!result.model_confidence.reliable && <AlertCircle className="w-3 h-3 text-[#e51716]" />}
               Model's directional read
             </span>
-            <Badge variant="secondary" className="text-xs font-normal opacity-70">
+            <span className="inline-flex items-center px-2 py-1 rounded-[2px] font-serif text-[12px] bg-muted text-muted-foreground border border-border">
               {result.ml_severity_bucket} (Low Confidence)
-            </Badge>
+            </span>
           </div>
         </div>
 
         {/* Core Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-muted">
-            <Clock className="w-5 h-5 text-blue-500 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 rounded-[2px] bg-background border border-border">
+            <Clock className="w-5 h-5 text-primary mt-0.5" />
             <div>
-              <div className="text-sm font-medium">Clearance Time</div>
-              <div className="text-2xl font-bold font-mono text-foreground mt-1">
-                {formatDuration(result.predicted_duration_hours)} <span className="text-sm font-normal text-muted-foreground">median</span>
+              <div className="text-[14px] font-bold">Clearance Time</div>
+              <div className="text-[24px] font-bold text-foreground mt-1 leading-none">
+                {formatDuration(result.predicted_duration_hours)} <span className="text-[14px] font-normal text-muted-foreground">median</span>
               </div>
-              <div className="mt-2 text-[10px] text-muted-foreground/80 leading-tight">
+              <div className="mt-2 text-[10px] text-muted-foreground leading-tight max-w-[200px]">
                 {result.fallback_status}
               </div>
             </div>
           </div>
           
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-muted">
-            <Users className="w-5 h-5 text-indigo-500 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 rounded-[2px] bg-background border border-border">
+            <Users className="w-5 h-5 text-primary mt-0.5" />
             <div>
-              <div className="text-sm font-medium">Deployment</div>
-              <div className="text-2xl font-bold font-mono text-foreground mt-1">
-                {result.recommended_officers} <span className="text-sm font-normal text-muted-foreground">officers base</span>
+              <div className="text-[14px] font-bold">Deployment</div>
+              <div className="text-[24px] font-bold text-foreground mt-1 leading-none">
+                {result.recommended_officers} <span className="text-[14px] font-normal text-muted-foreground">officers base</span>
               </div>
             </div>
           </div>
@@ -102,12 +102,12 @@ export default function ResultCard({ result }: { result: PredictResponse }) {
 
         {/* Diversion Alert */}
         {result.diversion_required && (
-          <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 rounded-md flex items-center gap-2 text-sm font-medium">
+          <div className="mt-6 p-4 bg-[#e51716]/10 border border-[#e51716]/20 text-[#e51716] rounded-[2px] flex items-center gap-2 text-[14px] font-bold">
             <AlertCircle className="w-4 h-4" />
             Traffic Diversion Recommended
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -16,72 +16,72 @@ export default function LimitationsSheet({ data }: { data: any }) {
 
   return (
     <Sheet>
-      <SheetTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 fixed bottom-6 right-6 z-50 shadow-lg border-primary/20 hover:border-primary/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <Info className="mr-2 h-4 w-4 text-primary" />
+      <SheetTrigger className="button-secondary fixed bottom-6 right-6 z-50 shadow-lg bg-background flex items-center gap-2">
+        <Info className="h-4 w-4 text-primary" />
         Data Limitations
       </SheetTrigger>
-      <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto">
-        <div className="max-w-5xl mx-auto w-full pt-4 pb-8">
-          <SheetHeader className="mb-8">
-            <SheetTitle className="text-2xl">Data Limitations & Explainability</SheetTitle>
-            <SheetDescription className="text-base">
+      <SheetContent side="bottom" className="h-[100dvh] max-h-none overflow-y-auto bg-background border-none font-serif">
+        <div className="max-w-[1308px] mx-auto w-full pt-16 pb-12 px-6">
+          <SheetHeader className="mb-12 border-b border-border pb-6">
+            <SheetTitle className="text-[28px] font-normal leading-[1.2] text-foreground font-serif">Data Limitations & Explainability</SheetTitle>
+            <SheetDescription className="text-[16px] text-muted-foreground font-serif mt-2">
               Transparent reporting on known biases and constraints in the predictive model.
             </SheetDescription>
           </SheetHeader>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             
-            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
-                <span className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></span>
+            <div className="flex flex-col gap-3 bg-background p-6 rounded-[2px] border border-border">
+              <h3 className="font-bold text-foreground flex items-center gap-2 text-[16px]">
+                <span className="w-2 h-2 bg-[#e51716]"></span>
                 Planned Events Gap
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-[14px] text-muted-foreground leading-relaxed">
                 {data.planned_events_gap}
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
-                <span className="w-3 h-3 rounded-full bg-amber-500 shadow-sm"></span>
+            <div className="flex flex-col gap-3 bg-background p-6 rounded-[2px] border border-border">
+              <h3 className="font-bold text-foreground flex items-center gap-2 text-[16px]">
+                <span className="w-2 h-2 bg-[#31313b]"></span>
                 ML Model Status
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-[14px] text-muted-foreground leading-relaxed">
                 {data.ml_model_status?.reason}
               </p>
-              <div className="mt-auto pt-4 text-sm bg-background border rounded-md p-3 grid grid-cols-2 gap-4 shadow-sm">
+              <div className="mt-auto pt-4 text-[14px] border-t border-border grid grid-cols-2 gap-4">
                 <div>
-                  <span className="block text-muted-foreground mb-1 text-xs uppercase tracking-wider">Reliable</span>
-                  <span className="font-medium flex items-center gap-1">
+                  <span className="block text-muted-foreground mb-1 text-[10px] uppercase tracking-wider font-bold">Reliable</span>
+                  <span className="font-bold flex items-center gap-1">
                     {data.ml_model_status?.reliable ? (
-                      <span className="text-green-600">Yes</span>
+                      <span className="text-[#1f7f51]">Yes</span>
                     ) : (
-                      <span className="text-amber-600">No</span>
+                      <span className="text-[#ea0201]">No</span>
                     )}
                   </span>
                 </div>
                 <div>
-                  <span className="block text-muted-foreground mb-1 text-xs uppercase tracking-wider">Macro-F1</span>
-                  <span className="font-medium">{(data.ml_model_status?.macro_f1 || 0).toFixed(2)}</span>
+                  <span className="block text-muted-foreground mb-1 text-[10px] uppercase tracking-wider font-bold">Macro-F1</span>
+                  <span className="font-bold">{(data.ml_model_status?.macro_f1 || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
-                <span className="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span>
+            <div className="flex flex-col gap-3 bg-background p-6 rounded-[2px] border border-border">
+              <h3 className="font-bold text-foreground flex items-center gap-2 text-[16px]">
+                <span className="w-2 h-2 bg-primary"></span>
                 UI Precedence Rule
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-[14px] text-muted-foreground leading-relaxed">
                 {data.ui_precedence_rule}
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 bg-muted/30 p-5 rounded-lg border">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
-                <span className="w-3 h-3 rounded-full bg-purple-500 shadow-sm"></span>
+            <div className="flex flex-col gap-3 bg-background p-6 rounded-[2px] border border-border">
+              <h3 className="font-bold text-foreground flex items-center gap-2 text-[16px]">
+                <span className="w-2 h-2 bg-[#71717a]"></span>
                 Priority Logging Skew
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-[14px] text-muted-foreground leading-relaxed">
                 Named corridors show a near 100% concentration of High priority events because BTP's standard practice treats named-corridor incidents as inherently priority-worthy. Ad-hoc and unnamed locations default to Low priority ("Non-corridor"). This is a real pattern in police logging data, not a pipeline aggregation bug.
               </p>
             </div>

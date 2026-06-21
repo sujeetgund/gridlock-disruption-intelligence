@@ -68,51 +68,51 @@ export default function SimulateDisruptionForm() {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-12 items-start">
-      <Card className="lg:col-span-5">
-        <CardHeader>
-          <CardTitle>Simulate Event</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            {/* @ts-ignore */}
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              
-              <FormField
-                control={form.control}
-                name="event_cause"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Event Cause</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select cause" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="vehicle_breakdown">Vehicle Breakdown</SelectItem>
-                        <SelectItem value="pot_holes">Potholes</SelectItem>
-                        <SelectItem value="accident">Accident</SelectItem>
-                        <SelectItem value="water_logging">Water Logging</SelectItem>
-                        <SelectItem value="congestion">Congestion</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-12 items-start font-serif">
+      <div className="lg:col-span-5 bi-card flex flex-col h-full">
+        <h3 className="text-[20px] font-bold text-foreground mb-6 border-b border-border pb-2">Simulate Event</h3>
+        <Form {...form}>
+          {/* @ts-ignore */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col">
+            
+            {/* Group 1: Incident Profile */}
+            <div className="space-y-4">
+              <h4 className="text-[12px] uppercase tracking-wider font-bold text-muted-foreground border-b border-border pb-1">Incident Profile</h4>
               <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="event_cause"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[14px] font-bold text-foreground">Event Cause</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="input-text w-full">
+                            <SelectValue placeholder="Select cause" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="vehicle_breakdown">Vehicle Breakdown</SelectItem>
+                          <SelectItem value="pot_holes">Potholes</SelectItem>
+                          <SelectItem value="accident">Accident</SelectItem>
+                          <SelectItem value="water_logging">Water Logging</SelectItem>
+                          <SelectItem value="congestion">Congestion</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="corridor"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Corridor</FormLabel>
+                      <FormLabel className="text-[14px] font-bold text-foreground">Corridor</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="input-text w-full">
                             <SelectValue placeholder="Select corridor" />
                           </SelectTrigger>
                         </FormControl>
@@ -132,40 +132,63 @@ export default function SimulateDisruptionForm() {
                     </FormItem>
                   )}
                 />
+              </div>
+            </div>
+
+            {/* Group 2: Severity & Impact */}
+            <div className="space-y-4">
+              <h4 className="text-[12px] uppercase tracking-wider font-bold text-muted-foreground border-b border-border pb-1">Severity & Impact</h4>
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="priority"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Priority</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select priority" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Low">Low</SelectItem>
-                          <SelectItem value="Medium">Medium</SelectItem>
-                          <SelectItem value="High">High</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormLabel className="text-[14px] font-bold text-foreground">Priority</FormLabel>
+                      <FormControl>
+                        <div className="flex border border-border rounded-[2px] overflow-hidden h-10">
+                          <button type="button" onClick={() => field.onChange("Low")} className={`flex-1 text-[12px] font-bold transition-colors ${field.value === 'Low' ? 'bg-[#1f7f51] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>Low</button>
+                          <button type="button" onClick={() => field.onChange("Medium")} className={`flex-1 text-[12px] font-bold border-l border-border transition-colors ${field.value === 'Medium' ? 'bg-[#002aff] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>Medium</button>
+                          <button type="button" onClick={() => field.onChange("High")} className={`flex-1 text-[12px] font-bold border-l border-border transition-colors ${field.value === 'High' ? 'bg-[#e51716] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>High</button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="requires_road_closure"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[14px] font-bold text-foreground">Road Closure</FormLabel>
+                      <FormControl>
+                        <div className="flex border border-border rounded-[2px] overflow-hidden h-10">
+                          <button type="button" onClick={() => field.onChange(false)} className={`flex-1 text-[12px] font-bold transition-colors ${field.value === false ? 'bg-[#002aff] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>No</button>
+                          <button type="button" onClick={() => field.onChange(true)} className={`flex-1 text-[12px] font-bold border-l border-border transition-colors ${field.value === true ? 'bg-[#e51716] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>Yes</button>
+                        </div>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+            </div>
 
+            {/* Group 3: Temporal Context */}
+            <div className="space-y-4">
+              <h4 className="text-[12px] uppercase tracking-wider font-bold text-muted-foreground border-b border-border pb-1">Temporal Context</h4>
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="hour_of_day"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Time of Day</FormLabel>
+                      <FormLabel className="text-[14px] font-bold text-foreground">Time of Day</FormLabel>
                       <Select onValueChange={(val) => field.onChange(Number(val))} defaultValue={String(field.value)} value={String(field.value)}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="input-text w-full">
                             <SelectValue placeholder="Select hour" />
                           </SelectTrigger>
                         </FormControl>
@@ -186,10 +209,10 @@ export default function SimulateDisruptionForm() {
                   name="day_of_week"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Day of Week</FormLabel>
+                      <FormLabel className="text-[14px] font-bold text-foreground">Day of Week</FormLabel>
                       <Select onValueChange={(val) => field.onChange(Number(val))} defaultValue={String(field.value)} value={String(field.value)}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="input-text w-full">
                             <SelectValue placeholder="Select day" />
                           </SelectTrigger>
                         </FormControl>
@@ -208,41 +231,27 @@ export default function SimulateDisruptionForm() {
                   )}
                 />
               </div>
+            </div>
 
-              <FormField
-                control={form.control}
-                name="requires_road_closure"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
-                    <FormControl>
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={field.onChange}
-                        className="mt-1 h-4 w-4"
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Requires Road Closure</FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full" disabled={loading}>
+            <div className="mt-auto pt-6">
+              <button 
+                type="submit" 
+                className="w-full flex justify-center items-center font-bold bg-[#002aff] hover:bg-[#0022cc] disabled:bg-muted disabled:text-muted-foreground text-white rounded-[2px] px-6 py-3 transition-colors duration-300" 
+                disabled={loading}
+              >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Get Recommendation
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                Generate Recommendation
+              </button>
+            </div>
+          </form>
+        </Form>
+      </div>
 
-      <div className="lg:col-span-7">
+      <div className="lg:col-span-7 h-full">
         {result ? (
           <ResultCard result={result} />
         ) : (
-          <div className="h-full min-h-[300px] flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground p-6 text-center">
+          <div className="h-full min-h-[300px] flex items-center justify-center border border-border bg-background/50 rounded-[2px] text-muted-foreground p-6 text-center text-[16px] italic">
             Run a simulation to generate resource deployment recommendations and severity forecasts.
           </div>
         )}
