@@ -14,6 +14,7 @@ const severityColors: Record<string, string> = {
 };
 
 interface MapEvent {
+  id?: string;
   latitude: number;
   longitude: number;
   severity_score: number;
@@ -22,7 +23,12 @@ interface MapEvent {
   severity_bucket: string;
 }
 
-export default function MapView({ events }: { events: MapEvent[] }) {
+interface MapViewProps {
+  events: MapEvent[];
+  onMarkerClick?: (corridor: string) => void;
+}
+
+export default function MapView({ events, onMarkerClick }: MapViewProps) {
   // Center roughly on Bengaluru
   const center: [number, number] = [12.9716, 77.5946];
 
@@ -35,13 +41,18 @@ export default function MapView({ events }: { events: MapEvent[] }) {
         />
         {events.map((event, i) => (
           <CircleMarker
-            key={i}
+            key={event.id || i}
             center={[event.latitude, event.longitude]}
             color={severityColors[event.severity_bucket] || severityColors.Unknown}
             fillColor={severityColors[event.severity_bucket] || severityColors.Unknown}
             fillOpacity={0.8}
             weight={1}
             radius={7}
+            eventHandlers={{
+              click: () => {
+                if (onMarkerClick) onMarkerClick(event.corridor);
+              }
+            }}
           >
             <Popup>
               <div className="flex flex-col gap-1 font-serif">

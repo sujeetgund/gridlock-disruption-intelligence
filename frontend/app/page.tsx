@@ -4,6 +4,7 @@ import { getBackendUrl } from "@/lib/api";
 import Leaderboard from "@/components/Leaderboard";
 import SimulateDisruptionForm from "@/components/SimulateDisruptionForm";
 import LimitationsSheet from "@/components/LimitationsSheet";
+import TimelineReplay from "@/components/TimelineReplay";
 
 async function getMapEvents() {
   const res = await fetch(`${getBackendUrl()}/api/events/map`, { cache: 'no-store' });
@@ -24,6 +25,12 @@ async function getLimitationsData() {
   return res.json();
 }
 
+async function getTimelineData() {
+  const res = await fetch(`${getBackendUrl()}/api/calibration/timeline/global`, { cache: 'no-store' });
+  if (!res.ok) return [];
+  return res.json();
+}
+
 async function MapSection() {
   const mapEvents = await getMapEvents();
   return <MapWrapper events={mapEvents} />;
@@ -32,6 +39,11 @@ async function MapSection() {
 async function LeaderboardSection() {
   const leaderboardData = await getLeaderboardData();
   return <Leaderboard data={leaderboardData} />;
+}
+
+async function TimelineSection() {
+  const timelineData = await getTimelineData();
+  return <TimelineReplay timeline={timelineData} />;
 }
 
 export default async function DashboardPage() {
@@ -84,7 +96,7 @@ export default async function DashboardPage() {
           </section>
         </div>
 
-        {/* Bottom Section: Simulation Engine */}
+        {/* Middle Section: Simulation Engine */}
         <section className="pt-8 border-t-[4px] border-foreground">
           <div className="mb-6">
             <h2 className="text-[36px] font-bold leading-[1.2] tracking-tight">
@@ -95,6 +107,23 @@ export default async function DashboardPage() {
             </p>
           </div>
           <SimulateDisruptionForm />
+        </section>
+
+        {/* Bottom Section: Timeline Map Replay */}
+        <section className="pt-8 border-t-[4px] border-foreground">
+          <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h2 className="text-[36px] font-bold leading-[1.2] tracking-tight text-[#002aff]">
+                Post-Event Learning Replay
+              </h2>
+              <p className="text-[16px] text-muted-foreground mt-2 max-w-3xl">
+                Chronological replay of historical events to measure the system's predictive calibration over time.
+              </p>
+            </div>
+          </div>
+          <Suspense fallback={<div className="w-full h-[600px] bg-muted animate-pulse rounded-[2px]"></div>}>
+            <TimelineSection />
+          </Suspense>
         </section>
 
       </main>

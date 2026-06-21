@@ -13,23 +13,28 @@ def main():
         return
         
     df_pred = pd.read_parquet(pred_path)
-    df_clean = pd.read_parquet(clean_path)
+    df_clean = pd.read_parquet(os.path.join(artifacts_dir, 'cleaned_data.parquet'))
     
-    # 1. Join to retrieve corridor using 'id'
-    df = df_pred.merge(df_clean[['id', 'corridor']], on='id', how='left')
+    # 2. Join to get severity_bucket, corridor, and location data
+    # Use id to join safely without string matching corridor names
+    df = df_pred.merge(
+        df_clean[['id', 'corridor', 'latitude', 'longitude', 'event_cause']], 
+        on='id', 
+        how='left'
+    )
     
-    # 2. Handle NaNs
-    initial_len = len(df)
+    # Drop rows without severity bucket (unresolved/no duration)
+    # Also drop if missing other critical fields
+    before_drop = len(df)
     df = df.dropna(subset=['predicted_bucket', 'severity_bucket', 'corridor', 'start_datetime'])
-    dropped = initial_len - len(df)
+    dropped = before_drop - len(df)
     print(f"Dropped {dropped} records with NaN in buckets/corridor/date.")
     
-    if dropped > 0:
-        # Quick check if concentrated in specific corridors
-        dropped_df = df_pred.merge(df_clean[['id', 'corridor']], on='id', how='left')
-        dropped_df = dropped_df[dropped_df[['predicted_bucket', 'severity_bucket', 'corridor']].isna().any(axis=1)]
-        print("Dropped concentration:")
-        print(dropped_df['corridor'].value_counts().head(5))
+    # Optional debug print for dropping concentration
+    # print("Dropped concentration:")
+    # print(df_pred.merge(df_clean[['id', 'corridor']], on='id', how='left')[
+    #     df_pred.merge(df_clean[['id', 'corridor']], on='id', how='left')[['predicted_bucket', 'severity_bucket', 'corridor', 'start_datetime']].isna().any(axis=1)
+    # ]['corridor'].value_counts().head(5))
         
     # 3. Map categorical buckets to numeric ordinal values
     # Assuming equal spacing for distance metric
@@ -40,13 +45,15 @@ def main():
     df['resolved_num'] = df['severity_bucket'].astype(str).map(bucket_map)
     
     # 4. Global sort by timestamp ascending
+    df['start_datetime'] = pd.to_datetime(df['start_datetime'], errors='coerce')
+    df['closed_datetime'] = pd.to_datetime(df['closed_datetime'], errors='coerce')
     df = df.sort_values('start_datetime').reset_index(drop=True)
     
-    # 5. Compute raw metrics
+    # 5. Compute raw metrics per incident
     df['raw_abs_error'] = (df['predicted_num'] - df['resolved_num']).abs()
     df['raw_bias'] = df['predicted_num'] - df['resolved_num']
     
-    # 6. Compute rolling metrics per corridor
+    # 6. Group by corridor and compute smoothed metrics
     def compute_corridor_metrics(group):
         group = group.sort_values('start_datetime')
         group['incident_seq_num'] = np.arange(1, len(group) + 1)
@@ -65,11 +72,12 @@ def main():
     # Final sort
     df = df.sort_values(['corridor', 'incident_seq_num'])
     
-    # Save ledger
+    # 7. Save ledger
     out_cols = [
-        'id', 'corridor', 'incident_seq_num', 'start_datetime', 
+        'id', 'corridor', 'incident_seq_num', 'start_datetime', 'closed_datetime',
         'predicted_bucket', 'severity_bucket', 'raw_abs_error', 
-        'raw_bias', 'rolling_error', 'rolling_bias'
+        'raw_bias', 'rolling_error', 'rolling_bias',
+        'latitude', 'longitude', 'event_cause'
     ]
     
     df[out_cols].to_parquet(os.path.join(artifacts_dir, 'calibration_ledger.parquet'), index=False)

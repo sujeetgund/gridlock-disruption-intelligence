@@ -31,14 +31,19 @@ class PredictAtReportResponse(BaseModel):
     contributing_factors: dict
 
 class CalibrationLedgerEntry(BaseModel):
+    id: str
     incident_seq_num: int
     timestamp: str
+    closed_datetime: Optional[str] = None
     predicted_bucket: str
     severity_bucket: str
     raw_abs_error: float
     raw_bias: float
     rolling_error: float
     rolling_bias: float
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    cause: Optional[str] = None
 
 class CalibrationSystemTrend(BaseModel):
     initial_mean_abs_error: float
