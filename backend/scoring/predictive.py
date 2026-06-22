@@ -17,6 +17,7 @@ def calculate_predictive_score(priority: str, corridor: str, app_data: Dict[str,
     # 3. Compute Corridor Frequency Component
     # Fetch historical count for this corridor exactly as computed in backtest
     corridor_counts = cutoffs.get('corridor_counts', {})
+    corridor_lookup_miss = corridor not in corridor_counts
     corridor_freq = corridor_counts.get(corridor, 0)
     
     # Min-Max Scale using the historical global min/max
@@ -54,7 +55,8 @@ def calculate_predictive_score(priority: str, corridor: str, app_data: Dict[str,
     contributing_factors = {
         "priority_component": priority_component,
         "corridor_frequency_component": corridor_frequency_component,
-        "historical_corridor_volume": corridor_freq
+        "historical_corridor_volume": corridor_freq,
+        "corridor_lookup_miss": corridor_lookup_miss
     }
         
     return predicted_bucket, round(predicted_severity_raw, 2), contributing_factors

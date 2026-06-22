@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, Field
+from typing import Optional, List, Dict, Any
 
 class PredictRequest(BaseModel):
     event_cause: str
@@ -15,11 +15,13 @@ class PredictResponse(BaseModel):
     predicted_duration_hours: float
     recommended_officers: int
     diversion_required: bool
-    model_confidence: dict
+    model_confidence: Dict[str, Any]
     fallback_status: str
-    
-    # Exposing the numeric score purely for map sorting or advanced rendering, not primary UI
-    severity_score: float 
+    severity_score: float = Field(..., description="Historical mean severity score for the corridor")
+    predicted_bucket: str = Field(..., description="Report-Time Predictive Score bucket")
+    predicted_score: float = Field(..., description="Report-Time Predictive raw score")
+    predictive_factors: Dict[str, Any] = Field(default_factory=dict, description="Rule-based breakdown factors")
+    ml_importances: Dict[str, float] = Field(default_factory=dict, description="Global LightGBM feature importances")
 
 class PredictAtReportRequest(BaseModel):
     priority: str

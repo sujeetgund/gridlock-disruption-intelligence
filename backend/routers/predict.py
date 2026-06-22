@@ -91,6 +91,20 @@ def predict_severity(req: PredictRequest):
         except Exception as e:
             ml_bucket = "Error"
 
+    # 6. Report-Time Predictive Score (Phase 1 Logic) for Explainability Panel
+    from ..scoring.predictive import calculate_predictive_score
+    predicted_bucket, predicted_score, predictive_factors = calculate_predictive_score(req.priority, req.corridor, app_data)
+
+    # 7. Global Feature Importances for ML Directional Read Explainability
+    ml_importances = {}
+    if model is not None and hasattr(model, 'feature_importances_') and hasattr(model, 'feature_name_'):
+        importances = model.feature_importances_
+        feature_names = model.feature_name_
+        total_importance = sum(importances)
+        if total_importance > 0:
+            for name, imp in zip(feature_names, importances):
+                ml_importances[name] = float(imp / total_importance)
+
     # Return structured payload
     return PredictResponse(
         display_severity_bucket=display_bucket,
@@ -100,7 +114,11 @@ def predict_severity(req: PredictRequest):
         diversion_required=diversion_required,
         model_confidence=app_data.get('model_confidence', {}),
         fallback_status=fallback_status,
-        severity_score=corr_stats['mean_severity'] if corr_stats else 0.0
+        severity_score=corr_stats['mean_severity'] if corr_stats else 0.0,
+        predicted_bucket=predicted_bucket,
+        predicted_score=predicted_score,
+        predictive_factors=predictive_factors,
+        ml_importances=ml_importances
     )
 
 from ..models.schemas import PredictAtReportRequest, PredictAtReportResponse
