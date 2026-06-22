@@ -6,6 +6,8 @@ import SimulateDisruptionForm from "@/components/SimulateDisruptionForm";
 import LimitationsSheet from "@/components/LimitationsSheet";
 import TimelineReplay from "@/components/TimelineReplay";
 
+export const dynamic = 'force-dynamic';
+
 async function getMapEvents() {
   const res = await fetch(`${getBackendUrl()}/api/events/map`, { cache: 'no-store' });
   if (!res.ok) return [];

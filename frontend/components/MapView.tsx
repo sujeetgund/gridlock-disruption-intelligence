@@ -41,7 +41,7 @@ export default function MapView({ events, onMarkerClick }: MapViewProps) {
         />
         {events.map((event, i) => (
           <CircleMarker
-            key={event.id || i}
+            key={`${event.id || i}-${event.severity_bucket}`}
             center={[event.latitude, event.longitude]}
             color={severityColors[event.severity_bucket] || severityColors.Unknown}
             fillColor={severityColors[event.severity_bucket] || severityColors.Unknown}

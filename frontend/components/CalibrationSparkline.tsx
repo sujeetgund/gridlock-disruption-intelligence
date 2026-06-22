@@ -18,7 +18,7 @@ export default function CalibrationSparkline({ data, corridor }: CalibrationSpar
   const chartData = useMemo(() => {
     // We plot raw, unsmoothed error to maintain statistical honesty 
     // and avoid the double-smoothing/overlap artifact.
-    return data.map(d => ({
+    return [...data].sort((a, b) => a.incident_seq_num - b.incident_seq_num).map(d => ({
       seq: d.incident_seq_num,
       error: d.raw_abs_error
     }));
@@ -68,8 +68,7 @@ export default function CalibrationSparkline({ data, corridor }: CalibrationSpar
           <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
             <XAxis 
               dataKey="seq" 
-              type="number" 
-              domain={['dataMin', 'dataMax']} 
+              type="category" 
               tick={{ fontSize: 10, fill: '#71717a' }}
               tickLine={false}
               axisLine={false}
@@ -100,6 +99,7 @@ export default function CalibrationSparkline({ data, corridor }: CalibrationSpar
               dot={{ r: 2 }}
               activeDot={{ r: 4 }}
               animationDuration={300}
+              connectNulls={true}
             />
           </LineChart>
         </ResponsiveContainer>

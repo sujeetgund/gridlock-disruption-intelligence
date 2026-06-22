@@ -36,11 +36,33 @@ def main():
     #     df_pred.merge(df_clean[['id', 'corridor']], on='id', how='left')[['predicted_bucket', 'severity_bucket', 'corridor', 'start_datetime']].isna().any(axis=1)
     # ]['corridor'].value_counts().head(5))
         
-    # 3. Map categorical buckets to numeric ordinal values
+    # 3. Recalculate predicted_bucket using the Phase 1 Report-Time formula
+    import sys
+    from pathlib import Path
+    
+    current_file_path = Path(__file__).resolve()
+    project_dir = current_file_path.parent.parent
+    sys.path.append(str(project_dir))
+    
+    from backend.scoring.predictive import calculate_predictive_score
+    
+    # Load the cutoffs directly.
+    predictive_cutoffs_path = project_dir / 'data-pipeline' / 'artifacts' / 'predictive_cutoffs.json'
+    with open(predictive_cutoffs_path, 'r') as f:
+        cutoffs = json.load(f)
+    
+    mock_app_data = {'predictive_cutoffs': cutoffs}
+    
+    def get_phase1_bucket(row):
+        bucket, _, _ = calculate_predictive_score(row['priority'], row['corridor'], mock_app_data)
+        return bucket
+        
+    df = df.merge(df_clean[['id', 'priority']], on='id', how='left')
+    df['predicted_bucket'] = df.apply(get_phase1_bucket, axis=1)
+
+    # 4. Map categorical buckets to numeric ordinal values
     # Assuming equal spacing for distance metric
     bucket_map = {'Low': 0.0, 'Medium': 1.0, 'High': 2.0, 'Critical': 3.0}
-    
-    # Cast to float to avoid Categorical subtraction error
     df['predicted_num'] = df['predicted_bucket'].astype(str).map(bucket_map)
     df['resolved_num'] = df['severity_bucket'].astype(str).map(bucket_map)
     
