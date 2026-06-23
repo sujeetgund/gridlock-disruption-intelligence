@@ -54,7 +54,8 @@ def get_corridor_calibration(corridor: str) -> Dict[str, Any]:
             rolling_bias=float(row['rolling_bias']) if row['rolling_bias'] is not None else 0.0,
             latitude=float(row['latitude']) if row.get('latitude') is not None else None,
             longitude=float(row['longitude']) if row.get('longitude') is not None else None,
-            cause=str(row['event_cause']) if row.get('event_cause') is not None else None
+            cause=str(row['event_cause']) if row.get('event_cause') is not None else None,
+            corridor=str(row['corridor'])
         ))
         
     return {
@@ -93,7 +94,8 @@ def get_global_timeline():
             rolling_bias=float(row['rolling_bias']) if row['rolling_bias'] is not None else 0.0,
             latitude=float(row['latitude']) if row.get('latitude') is not None else None,
             longitude=float(row['longitude']) if row.get('longitude') is not None else None,
-            cause=str(row['event_cause']) if row.get('event_cause') is not None else None
+            cause=str(row['event_cause']) if row.get('event_cause') is not None else None,
+            corridor=str(row['corridor'])
         ))
         
     return entries

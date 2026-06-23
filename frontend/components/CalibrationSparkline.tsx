@@ -63,8 +63,9 @@ export default function CalibrationSparkline({ data, corridor }: CalibrationSpar
           N = {chartData.length}
         </span>
       </div>
-      <div className="flex-1 min-h-[100px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1 min-h-[100px] w-full relative">
+        <div className="absolute inset-0">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
             <XAxis 
               dataKey="seq" 
@@ -103,6 +104,7 @@ export default function CalibrationSparkline({ data, corridor }: CalibrationSpar
             />
           </LineChart>
         </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

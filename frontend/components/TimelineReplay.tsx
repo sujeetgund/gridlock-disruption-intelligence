@@ -204,9 +204,21 @@ export default function TimelineReplay({ timeline }: TimelineReplayProps) {
         
         <div className="lg:col-span-4 flex flex-col">
           <div className="bi-card p-4 flex flex-col h-[200px] mb-6">
-            <h3 className="text-[16px] font-bold uppercase tracking-wider mb-4 border-b border-border pb-2">
-              Calibration Trend
-            </h3>
+            <div className="flex items-center justify-between mb-4 border-b border-border pb-2">
+              <h3 className="text-[16px] font-bold uppercase tracking-wider">
+                Calibration Trend
+              </h3>
+              <select 
+                className="text-[12px] bg-background border border-border rounded px-2 py-1 max-w-[150px] text-foreground"
+                value={focusedCorridor || ""}
+                onChange={(e) => setFocusedCorridor(e.target.value || null)}
+              >
+                <option value="">Select a corridor...</option>
+                {Array.from(new Set(timeline.map(e => e.corridor))).sort().map((c, i) => (
+                  <option key={c || `unknown-${i}`} value={c || ""}>{c || "Unknown"}</option>
+                ))}
+              </select>
+            </div>
             <div className="flex-1 min-h-0">
               <CalibrationSparkline data={sparklineData} corridor={focusedCorridor} />
             </div>

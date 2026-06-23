@@ -46,6 +46,7 @@ class CalibrationLedgerEntry(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     cause: Optional[str] = None
+    corridor: str
 
 class CalibrationSystemTrend(BaseModel):
     initial_mean_abs_error: float
