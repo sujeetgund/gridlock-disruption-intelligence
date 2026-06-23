@@ -5,7 +5,6 @@ class PredictRequest(BaseModel):
     event_cause: str
     corridor: str
     priority: str
-    requires_road_closure: bool
     hour_of_day: int
     day_of_week: int
 

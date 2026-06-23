@@ -64,7 +64,7 @@ def predict_severity(req: PredictRequest):
     recommended_officers = 2 + risk_premium + active_premium
     
     # 4. Rule Engine - Diversion Required
-    diversion_required = req.requires_road_closure or (req.priority == 'High')
+    diversion_required = (req.priority == 'High')
     
     # 5. ML Model Prediction (Secondary Directional Read)
     model = app_data.get('model')
