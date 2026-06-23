@@ -125,3 +125,30 @@ The Next.js frontend proxies `/api` to `http://127.0.0.1:8000` by default. To po
 # .env.local
 BACKEND_URL=https://your-backend-url.com
 ```
+
+## Deploying the Backend (Google Cloud Run)
+
+The backend is fully containerized.
+
+```bash
+# 1. Authenticate and set your project
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+
+# 2. Build and deploy in one step (Cloud Build handles the Docker build)
+gcloud run deploy gridlock-backend \
+  --source . \
+  --region asia-south1 \
+  --platform managed \
+  --allow-unauthenticated \
+  --port 8080 \
+  --memory 1Gi \
+  --cpu 1
+
+# 3. Copy the deployed URL and set it in frontend/.env.local
+echo "BACKEND_URL=https://<your-service-url>.run.app" > frontend/.env.local
+```
+
+> [!NOTE] 
+> The image is ~500MB — `lightgbm` and `pandas` are the heavy dependencies. `--memory 1Gi` is the minimum safe value for loading the model and parquet artifacts at startup.
+

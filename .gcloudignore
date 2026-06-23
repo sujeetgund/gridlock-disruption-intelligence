@@ -1,0 +1,23 @@
+# gcloudignore — controls what gcloud uploads to Cloud Build
+# This is NOT the same as .dockerignore (which controls what Docker copies into the image)
+
+# Exclude everything by default, then whitelist what's needed
+# Only the backend source, artifacts, and dependency files are needed
+
+# Node / frontend
+frontend/
+
+# Python virtual environment
+.venv/
+
+# Git internals
+.git/
+
+# Dev / docs
+*.md
+.agents/
+skills-lock.json
+
+# OS
+.DS_Store
+Thumbs.db

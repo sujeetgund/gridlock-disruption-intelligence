@@ -142,7 +142,7 @@ export default async function DashboardPage() {
         <section className="pt-8 border-t-[4px] border-foreground">
           <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <h2 className="text-[36px] font-bold leading-[1.2] tracking-tight text-[#002aff]">
+              <h2 className="text-[36px] font-bold leading-[1.2] tracking-tight">
                 Post-Event Learning Replay
               </h2>
               <p className="text-[16px] text-muted-foreground mt-2 max-w-3xl">

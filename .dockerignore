@@ -1,0 +1,32 @@
+# Python artifacts
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+
+# Frontend — not needed in backend image
+frontend/
+
+# Raw data — artifacts/ is copied explicitly; raw CSV is not needed at runtime
+data/
+
+# Data pipeline scripts — artifacts are already pre-built
+data-pipeline/*.py
+
+# Docs
+*.md
+
+# Dev files
+.python-version
+main.py
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
