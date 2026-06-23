@@ -1,10 +1,19 @@
+"""
+clean.py
+
+Data cleaning and preprocessing script for the astram_event_data.csv dataset.
+This script handles missing values, date parsing, duration calculations, and geo-spatial formatting.
+It outputs the cleaned data to `artifacts/cleaned_data.parquet`.
+"""
+
 import pandas as pd
 import numpy as np
-import os
+from pathlib import Path
 
 def main():
+    base_dir = Path(__file__).resolve().parent
     # 1. Load astram_event_data.csv
-    csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'astram_event_data.csv')
+    csv_path = base_dir.parent / 'data' / 'astram_event_data.csv'
     df = pd.read_csv(csv_path)
 
     # Convert dates to UTC
@@ -71,9 +80,9 @@ def main():
         df['month'] = df['start_datetime'].dt.month
 
     # 8. Save cleaned data to artifacts/cleaned_data.parquet
-    artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
-    os.makedirs(artifacts_dir, exist_ok=True)
-    out_path = os.path.join(artifacts_dir, 'cleaned_data.parquet')
+    out_dir = base_dir / 'artifacts'
+    out_dir.mkdir(exist_ok=True)
+    out_path = out_dir / 'cleaned_data.parquet'
     df.to_parquet(out_path, index=False)
 
     print("\n--- Summary ---")

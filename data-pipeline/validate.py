@@ -1,4 +1,11 @@
-import os
+"""
+validate.py
+
+Validation and sanity check script for the data pipeline artifacts.
+Ensures that the output schemas and distributions meet expected constraints before they are consumed by the backend.
+"""
+
+from pathlib import Path
 import json
 import pandas as pd
 import numpy as np
@@ -8,10 +15,11 @@ def main():
     print("  CONSOLIDATED VALIDATION REPORT CARD")
     print("========================================")
     
-    artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
-    clean_data_path = os.path.join(artifacts_dir, 'cleaned_data.parquet')
-    scored_data_path = os.path.join(artifacts_dir, 'scored_data.parquet')
-    confidence_path = os.path.join(artifacts_dir, 'model_confidence.json')
+    base_dir = Path(__file__).resolve().parent
+    artifacts_dir = base_dir / 'artifacts'
+    clean_data_path = artifacts_dir / 'cleaned_data.parquet'
+    scored_data_path = artifacts_dir / 'scored_data.parquet'
+    confidence_path = artifacts_dir / 'model_confidence.json'
 
     all_passed = True
 

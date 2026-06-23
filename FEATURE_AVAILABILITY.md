@@ -1,6 +1,9 @@
 # Feature Availability Audit (Phase 0)
 
 ## Schema Overview: `astram_event_data.csv`
+
+> *Column semantics were determined by inspecting unique values, null-rate patterns, and naming conventions, with no external data dictionary available. Fields with clear behavioral signatures (timestamps, categorical fields with few distinct values, fields directly referenced by other audited fields) were resolved with high confidence. A smaller set of internal/administrative fields (`gba_identifier`, `kgid`, `meta_data`, `client_id`, `map_file`) were inferred from naming convention alone and were not used in any scoring or modeling decision — their exact semantics don't affect the audit's conclusions.*
+
 Below are the 46 columns present in the dataset with their semantic meanings:
 
 1. `id`: Unique identifier for the event
@@ -66,14 +69,28 @@ To build a predictive score that avoids label leakage, we must only use fields t
 **3. Priority (`priority`) -> INCLUDE**
 - **Availability:** Assigned exactly at the moment of logging.
 - **Evidence:** Out of 222 historical events modified within 1 minute of their `created_date` (i.e., immediately upon creation with virtually no triage window), 100% of them (222/222) possessed a non-null `priority` (122 High, 100 Low). This confirms priority is populated simultaneously with event creation.
-- **Data Quality Note:** The full 8,173-row dataset contains exclusively 'High' (5030), 'Low' (3141), and NaN (2) values. The 2 records with `NaN` are silently assigned to the 'otherwise' bucket (0.3) by the binary encoder, effectively treating them as 'Low' priority.
+- **Data Quality Note:** The full 8,173-row dataset contains exclusively 'High' (5030), 'Low' (3141), and NaN (2) values. The 2 records with `NaN` priority are assigned a weight of 0.3 by convention, treating missing urgency as a low-end default. This affects 0.02% of records and was a one-time training-data decision, not a live-prediction fallback.
 - **Decision:** Included in predictive scoring.
 
 **4. Corridor Frequency (Derived from `corridor`) -> INCLUDE**
 - **Availability:** The `corridor` name is part of the location data entered at logging. The frequency is a pre-calculated historical aggregate.
 - **Decision:** Included in predictive scoring.
 
-## Conclusion & Action
+## Three Distinct Severity Signals
+
+1. **Historical Baseline** (`display_severity_bucket`) — not a forecast. Uses the actual historical median duration for the cause+corridor combination. This is retrospectively accurate by construction and drives all primary UI color/badges.
+2. **Report-Time Predictive Score** — a deterministic rule-based formula (Priority 57.14% + Corridor Frequency 42.86%), computable the instant an incident is logged, with zero post-resolution inputs.
+3. **ML Directional Read** (`ml_severity_bucket`) — an independently-trained LightGBM model on the six report-time features above, labeled low-confidence and secondary.
+
+Signals 2 and 3 are built independently and can be cross-checked against each other; both are deliberately kept subordinate to signal 1 in the UI hierarchy.
+
+## ML Model Feature Set (LightGBM Directional Read)
+
+The model trains on six report-time-available fields: `event_cause`, `corridor`, `priority` (all logged at creation), and `hour_of_day`, `day_of_week`, `is_weekend` (derived from `created_date`, trivially available at report time). `duration`, `completion_time`, `severity_score`, and `requires_road_closure` are excluded, consistent with the report-time availability findings above.
+
+An earlier build briefly included `requires_road_closure`; this was caught during internal review and removed. A leaked-vs-clean comparison showed no statistically significant performance difference (clean Macro-F1 0.477 vs. leaked 0.471 on the held-out test split; 5-fold CV overlap: `0.457 ± 0.018` leaked vs. `0.451 ± 0.023` clean). The feature was removed regardless of that result — report-time availability is a structural requirement, not a performance trade-off.
+
+## Conclusion & Action (Rule-Based Predictive Score)
 The Phase 1 Predictive Severity Score will rely exclusively on **Priority** and **Corridor Frequency**, renormalizing the weights to 57.14% and 42.86% respectively, completely eliminating `duration` and `requires_road_closure` to ensure strict real-time validity.
 
 ### Note on Pre-Processing and Bucketing
@@ -90,3 +107,8 @@ The raw predictive score (0-100) intentionally omits a `log1p` transformation an
 > **Phase 2 Calibration Impact:** In Phase 2, the replay engine shows a system-wide Mean Absolute Error (MAE) of ~1.0. Because our ordinal mapping uses a 0–3 scale, an MAE of 1.0 means predictions are, on average, off by about one full severity bucket. This meaningfully weak result is a direct, honest consequence of the structural coarseness documented here in Phase 1 (relying on only 2 inputs resulting in 25 unique scores).
 >
 > **Missing Duration (Data Quality):** To evaluate calibration, we dropped ~61% of historical records because they lacked a valid `event_duration_hours` (and therefore a resolved severity bucket). Temporal analysis proved this drop is incredibly stable (~60% every single month) and the surviving dataset extends up to the final 6 hours of the full dataset. This confirms the missing data is a chronic historical tracking limitation in the source system, not an artifact of recent incidents remaining open.
+>
+> *These gaps are reported as operational findings about current BTP logging practice — not concealed as system shortcomings. Improving `closed_datetime` capture consistency would directly improve both the rule-based baseline and ML forecasting fidelity, and is itself an actionable recommendation arising from this audit.*
+
+## Roadmap: Periodic Retraining (Not Yet Implemented)
+The current model is trained once on the available historical data and does not update automatically. As more incidents are logged and resolved over time, a scheduled — manual, not live — retraining cycle would let the model draw on a larger and more representative sample, particularly benefiting sparse corridors and the underrepresented Critical bucket. The dashboard's "Historical Replay" feature demonstrates this concept by chronologically replaying past data; it does not modify the live model.

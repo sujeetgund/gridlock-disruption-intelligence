@@ -11,8 +11,13 @@ The rule-based and predictive models segment severity into 4 buckets. However, d
 Categories like `accident` and `congestion` show high proportions of open/unresolved cases (~75-80% missing completion time) relative to `vehicle_breakdown`. Consequently, duration predictions for these causes may lack representativeness.
 
 ### 3. Machine Learning Limitations (Macro-F1 < 0.5)
-The LightGBM classification model correctly flags its own confidence as low based on its Macro-F1 score (`0.47`). 
+The LightGBM classification model correctly flags its own confidence as low based on its Macro-F1 score (`0.477`). 
+
+*The ML feature set was audited against the same report-time availability standard applied to the rule-based score (see `FEATURE_AVAILABILITY.md`); `requires_road_closure` was identified and removed during this process.* 
 **Critical vs High Distinction:** The model's primary error mode is under-distinguishing `High` vs `Critical` (predicting High for Critical events), not failing to detect severity altogether. Operationally, this failure mode is safer, since both `High` and `Critical` result in significant escalated responses.
+
+### 4. Corridor Lookup Fallback
+*Unrecognized corridor names entered via the simulation form default the frequency component to 0.0 and surface an explicit on-screen warning per affected prediction, rather than failing silently or crashing.*
 
 ## Rule Engine Formulas
 

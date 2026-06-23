@@ -1,13 +1,22 @@
+"""
+predictive_score.py
+
+Computes the Report-Time Predictive Score (Phase 1 logic).
+This script uses only report-time available fields (Priority and Corridor Frequency) to generate a raw score and severity bucket.
+Outputs predictive_cutoffs.json (for live API use) and predicted_data.parquet (for Phase 2 calibration replay).
+"""
+
 import pandas as pd
 import numpy as np
-import os
+from pathlib import Path
 import json
 
 def main():
-    artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
-    clean_data_path = os.path.join(artifacts_dir, 'cleaned_data.parquet')
+    base_dir = Path(__file__).resolve().parent
+    artifacts_dir = base_dir / 'artifacts'
+    clean_data_path = artifacts_dir / 'cleaned_data.parquet'
     
-    if not os.path.exists(clean_data_path):
+    if not clean_data_path.exists():
         print(f"Error: Could not find {clean_data_path}")
         return
         
@@ -64,10 +73,10 @@ def main():
         'corridor_counts': corridor_counts.to_dict()
     }
     
-    with open(os.path.join(artifacts_dir, 'predictive_cutoffs.json'), 'w') as f:
+    with open(artifacts_dir / 'predictive_cutoffs.json', 'w') as f:
         json.dump(cutoffs, f, indent=2)
         
-    print(f"\nSaved predictive_cutoffs.json")
+    print("\nSaved predictive_cutoffs.json")
     
     # Prepare the output dataset for Phase 2 replay engine
     out_cols = [
@@ -77,7 +86,7 @@ def main():
     
     # severity_bucket is the resolved one computed in clean.py
     out_df = df[[c for c in out_cols if c in df.columns]]
-    out_path = os.path.join(artifacts_dir, 'predicted_data.parquet')
+    out_path = artifacts_dir / 'predicted_data.parquet'
     out_df.to_parquet(out_path, index=False)
     
     print(f"Saved {len(out_df)} records to predicted_data.parquet")

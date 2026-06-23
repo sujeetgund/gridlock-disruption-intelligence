@@ -1,13 +1,27 @@
+"""
+severity_score.py
+
+Computes the historical (resolved) severity bucket for each event based on its actual clearance time.
+This sets the "Ground Truth" labels used by both the ML model (target variable) and the predictive rule engine (backtesting).
+Outputs the quantiles used for severity cutoffs.
+"""
+
 import pandas as pd
 import numpy as np
-import os
+from pathlib import Path
 import json
 from scipy.stats import spearmanr
 
 def main():
     # Load cleaned data
-    artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
-    clean_data_path = os.path.join(artifacts_dir, 'cleaned_data.parquet')
+    base_dir = Path(__file__).resolve().parent
+    artifacts_dir = base_dir / 'artifacts'
+    clean_data_path = artifacts_dir / 'cleaned_data.parquet'
+    
+    if not clean_data_path.exists():
+        print(f"Error: Could not find {clean_data_path}")
+        return
+        
     df = pd.read_parquet(clean_data_path)
 
     # We only compute severity scores for rows with a valid duration (since we need it for duration_component)
@@ -72,7 +86,7 @@ def main():
     ).reset_index()
     
     corridor_stats_dict = corridor_stats.to_dict(orient='records')
-    with open(os.path.join(artifacts_dir, 'corridor_lookup.json'), 'w') as f:
+    with open(artifacts_dir / 'corridor_lookup.json', 'w') as f:
         json.dump(corridor_stats_dict, f, indent=2)
     
     # Validation Gates
@@ -93,7 +107,7 @@ def main():
     plt.title('Severity Score Distribution')
     plt.xlabel('Severity Score (0-100)')
     plt.ylabel('Frequency')
-    plt.savefig(os.path.join(artifacts_dir, 'severity_distribution.png'))
+    plt.savefig(artifacts_dir / 'severity_distribution.png')
     
     std_dev = valid_df['severity_score'].std()
     if std_dev > 5: # not a degenerate point mass
@@ -159,7 +173,7 @@ def main():
     
     # Save the dataframe with severity_score for the next step just in case, or we can compute it there.
     # Actually, step 3 predicts severity_bucket, not severity_score. But saving is good.
-    valid_df.to_parquet(os.path.join(artifacts_dir, 'scored_data.parquet'), index=False)
+    valid_df.to_parquet(artifacts_dir / 'scored_data.parquet', index=False)
 
 if __name__ == '__main__':
     main()

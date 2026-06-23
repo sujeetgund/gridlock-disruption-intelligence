@@ -1,6 +1,14 @@
+"""
+train_model.py
+
+Trains the LightGBM machine learning classifier for the "Directional Read" ML severity bucket.
+Explicitly excludes duration-based fields and post-resolution data (like requires_road_closure) to prevent label leakage.
+Outputs `model.pkl`, `feature_importance.json`, and `model_confidence.json`.
+"""
+
 import pandas as pd
 import numpy as np
-import os
+from pathlib import Path
 import json
 import joblib
 from sklearn.model_selection import StratifiedKFold, train_test_split
@@ -12,8 +20,9 @@ warnings.filterwarnings('ignore')
 
 def main():
     # Define directories
-    artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
-    clean_data_path = os.path.join(artifacts_dir, 'cleaned_data.parquet')
+    base_dir = Path(__file__).resolve().parent
+    artifacts_dir = base_dir / 'artifacts'
+    clean_data_path = artifacts_dir / 'cleaned_data.parquet'
     
     # 1. Load data and filter to valid duration
     df = pd.read_parquet(clean_data_path)
@@ -132,14 +141,14 @@ def main():
         "macro_f1": float(final_macro_f1),
         "critical_recall": float(critical_report.get('recall', 0))
     }
-    with open(os.path.join(artifacts_dir, 'model_confidence.json'), 'w') as f:
+    with open(artifacts_dir / 'model_confidence.json', 'w') as f:
         json.dump(confidence_data, f, indent=2)
         
     print(f"\nModel Reliable Flag: {is_reliable}")
     print(f"Reason: {confidence_reason}")
     
     # Save Model
-    model_path = os.path.join(artifacts_dir, 'model.pkl')
+    model_path = artifacts_dir / 'model.pkl'
     joblib.dump(clf, model_path)
     print(f"Model saved to {model_path}")
     
@@ -152,7 +161,7 @@ def main():
     print(feat_imp.to_string(index=False))
     
     feat_imp_dict = feat_imp.to_dict(orient='records')
-    with open(os.path.join(artifacts_dir, 'feature_importance.json'), 'w') as f:
+    with open(artifacts_dir / 'feature_importance.json', 'w') as f:
         json.dump(feat_imp_dict, f, indent=2)
 
 if __name__ == '__main__':

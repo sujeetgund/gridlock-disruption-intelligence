@@ -1,3 +1,11 @@
+"""
+calibration_ledger.py
+
+Generates the Phase 2 calibration ledger by chronological replay.
+Calculates error and bias between the Phase 1 Report-Time predictive score and the actual resolved severity score over time.
+Outputs `calibration_summary.json` and `calibration_ledger.json` for dashboard consumption.
+"""
+
 import pandas as pd
 import numpy as np
 import os
