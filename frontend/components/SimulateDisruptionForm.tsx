@@ -22,11 +22,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ResultCard from "./ResultCard";
 import { getApiUrl } from "@/lib/api";
 
+const CORRIDORS = [
+  "Airport New South Road", "Bannerghata Road", "Bellary Road 1", "Bellary Road 2",
+  "CBD 1", "CBD 2", "Hennur Main Road", "Hosur Road", "IRR(Thanisandra road)",
+  "Magadi Road", "Mysore Road", "Non-corridor", "ORR East 1", "ORR East 2",
+  "ORR North 1", "ORR North 2", "ORR West 1", "Old Airport Road", "Old Madras Road",
+  "Tumkur Road", "Varthur Road", "West of Chord Road"
+];
+
 const formSchema = z.object({
   event_cause: z.string().min(1, "Event cause is required"),
   corridor: z.string().min(1, "Corridor is required"),
   priority: z.string().min(1, "Priority is required"),
-  requires_road_closure: z.boolean(),
   hour_of_day: z.coerce.number().min(0).max(23),
   day_of_week: z.coerce.number().min(0).max(6),
 });
@@ -34,6 +41,7 @@ const formSchema = z.object({
 export default function SimulateDisruptionForm() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [corridorFocused, setCorridorFocused] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     // @ts-ignore
@@ -42,7 +50,6 @@ export default function SimulateDisruptionForm() {
       event_cause: "vehicle_breakdown",
       corridor: "ORR North 1",
       priority: "Medium",
-      requires_road_closure: false,
       hour_of_day: 14,
       day_of_week: 2,
     },
@@ -69,11 +76,11 @@ export default function SimulateDisruptionForm() {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-12 items-start font-serif">
-      <div className="lg:col-span-5 bi-card flex flex-col h-full">
+      <div className="lg:col-span-5 bi-card sticky top-6">
         <h3 className="text-[20px] font-bold text-foreground mb-6 border-b border-border pb-2">Simulate Event</h3>
         <Form {...form}>
           {/* @ts-ignore */}
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
             {/* Group 1: Incident Profile */}
             <div className="space-y-4">
@@ -108,26 +115,42 @@ export default function SimulateDisruptionForm() {
                   control={form.control}
                   name="corridor"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="relative">
                       <FormLabel className="text-[14px] font-bold text-foreground">Corridor</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="input-text w-full">
-                            <SelectValue placeholder="Select corridor" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="ORR North 1">ORR North 1</SelectItem>
-                          <SelectItem value="ORR East 1">ORR East 1</SelectItem>
-                          <SelectItem value="Mysore Road">Mysore Road</SelectItem>
-                          <SelectItem value="Hosur Road">Hosur Road</SelectItem>
-                          <SelectItem value="Tumkur Road">Tumkur Road</SelectItem>
-                          <SelectItem value="Bellary Road 1">Bellary Road 1</SelectItem>
-                          <SelectItem value="CBD 1">CBD 1</SelectItem>
-                          <SelectItem value="Hennur Main Road">Hennur Main Road</SelectItem>
-                          <SelectItem value="Non-corridor">Non-corridor</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <div>
+                          <Input 
+                            {...field} 
+                            placeholder="Type or select corridor..." 
+                            className="input-text w-full"
+                            onFocus={() => setCorridorFocused(true)}
+                            onBlur={() => setCorridorFocused(false)}
+                            autoComplete="off"
+                          />
+                          {corridorFocused && (
+                            <div className="absolute z-10 w-full mt-1 bg-background border border-border rounded-md shadow-md max-h-60 overflow-y-auto">
+                              {CORRIDORS.filter(c => c.toLowerCase().includes((field.value || '').toLowerCase())).map(c => (
+                                <div 
+                                  key={c}
+                                  className="px-3 py-2 text-[14px] cursor-pointer hover:bg-muted text-foreground transition-colors"
+                                  onMouseDown={(e) => {
+                                    e.preventDefault(); // prevent blur
+                                    field.onChange(c);
+                                    setCorridorFocused(false);
+                                  }}
+                                >
+                                  {c}
+                                </div>
+                              ))}
+                              {CORRIDORS.filter(c => c.toLowerCase().includes((field.value || '').toLowerCase())).length === 0 && (
+                                <div className="px-3 py-2 text-[14px] text-muted-foreground italic">
+                                  Press enter to use custom value
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -138,7 +161,7 @@ export default function SimulateDisruptionForm() {
             {/* Group 2: Severity & Impact */}
             <div className="space-y-4">
               <h4 className="text-[12px] uppercase tracking-wider font-bold text-muted-foreground border-b border-border pb-1">Severity & Impact</h4>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <FormField
                   control={form.control}
                   name="priority"
@@ -150,23 +173,6 @@ export default function SimulateDisruptionForm() {
                           <button type="button" onClick={() => field.onChange("Low")} className={`flex-1 text-[12px] font-bold transition-colors ${field.value === 'Low' ? 'bg-[#1f7f51] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>Low</button>
                           <button type="button" onClick={() => field.onChange("Medium")} className={`flex-1 text-[12px] font-bold border-l border-border transition-colors ${field.value === 'Medium' ? 'bg-[#002aff] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>Medium</button>
                           <button type="button" onClick={() => field.onChange("High")} className={`flex-1 text-[12px] font-bold border-l border-border transition-colors ${field.value === 'High' ? 'bg-[#e51716] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>High</button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="requires_road_closure"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-[14px] font-bold text-foreground">Road Closure</FormLabel>
-                      <FormControl>
-                        <div className="flex border border-border rounded-[2px] overflow-hidden h-10">
-                          <button type="button" onClick={() => field.onChange(false)} className={`flex-1 text-[12px] font-bold transition-colors ${field.value === false ? 'bg-[#002aff] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>No</button>
-                          <button type="button" onClick={() => field.onChange(true)} className={`flex-1 text-[12px] font-bold border-l border-border transition-colors ${field.value === true ? 'bg-[#e51716] text-white' : 'bg-background text-foreground hover:bg-muted'}`}>Yes</button>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -233,7 +239,7 @@ export default function SimulateDisruptionForm() {
               </div>
             </div>
 
-            <div className="mt-auto pt-6">
+            <div className="pt-2">
               <button 
                 type="submit" 
                 className="w-full flex justify-center items-center font-bold bg-[#002aff] hover:bg-[#0022cc] disabled:bg-muted disabled:text-muted-foreground text-white rounded-[2px] px-6 py-3 transition-colors duration-300" 
