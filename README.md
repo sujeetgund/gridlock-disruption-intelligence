@@ -6,7 +6,7 @@ This system forecasts the congestion impact of event-driven disruptions and reco
 
 > See [METHODOLOGY.md](METHODOLOGY.md) and [FEATURE_AVAILABILITY.md](FEATURE_AVAILABILITY.md) for the full data audit, scoring logic, and statistical disclosures.
 
-**[🌐 Live App](https://gridlock-disruption-intelligence.vercel.app/) · [📹 Demo Video](https://drive.google.com/file/d/11pon8lB) · [💻 GitHub](https://github.com/sujeetgund/gridlock-disruption-intelligence)**
+**[🌐 Live App](https://gridlock-disruption-intelligence.vercel.app/) · [📹 Demo Video](https://drive.google.com/file/d/11pon8lB-GCGtmyYGC9p9g0xwiS3cPIua/view?usp=drive_link) · [💻 GitHub](https://github.com/sujeetgund/gridlock-disruption-intelligence)**
 
 ---
 
