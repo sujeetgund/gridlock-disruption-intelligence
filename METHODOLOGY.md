@@ -21,6 +21,8 @@ The LightGBM classification model correctly flags its own confidence as low base
 
 ## Rule Engine Formulas
 
+> *Note: bucket labels (Low/Medium/High/Critical) are shared terminology across two distinct systems on different scales. The duration-based edges below classify the Historical Baseline (`display_severity_bucket`) and the Resolved Severity score, both measured in hours. The Report-Time Predictive Score uses a separate natural-break cutoff system on a 0–100 point scale (see `FEATURE_AVAILABILITY.md`, "Note on Pre-Processing and Bucketing") — the two cutoff sets are not directly comparable and bucket the same incident independently.*
+
 ### Severity Bucket Edges (Calculated from Valid Durations)
 - **Low**: < 1.1 hours
 - **Medium**: 1.1 to 5.5 hours

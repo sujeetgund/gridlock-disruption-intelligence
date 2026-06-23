@@ -1,57 +1,115 @@
-# Disruption Impact & Response Intelligence System
+<img src="frontend/public/screenshots/gridlock-disruption-intelligence.jpeg" style="border-radius: 12px;" alt="Gridlock Disruption Intelligence Dashboard" />
 
-Gridlock Hackathon 2.0 — Theme 2 (Event-Driven Congestion)
+**Gridlock Hackathon 2.0 — Theme 2 (Event-Driven Congestion) · Target: Bengaluru Traffic Police (BTP) & Flipkart**
 
-This repository contains the data pipeline, FastAPI backend, and Next.js frontend dashboard.
+This system forecasts the congestion impact of event-driven disruptions and recommends proportional officer deployment. Built on 8,173 real-world BTP incident records — no synthetic data.
 
-_This system forecasts the congestion impact of event-driven disruptions and recommends proportional officer deployment. It is built on the `astram_event_data.csv` dataset comprising 8,173 real-world Bengaluru Traffic Police (BTP) incident records. See [METHODOLOGY.md](METHODOLOGY.md) and [FEATURE_AVAILABILITY.md](FEATURE_AVAILABILITY.md) for the full data audit, scoring methodology, and known limitations._
+> See [METHODOLOGY.md](METHODOLOGY.md) and [FEATURE_AVAILABILITY.md](FEATURE_AVAILABILITY.md) for the full data audit, scoring logic, and statistical disclosures.
 
-## Features
+> 📹 **Demo Video:** *(link to be added before submission)*
 
-1. **Live Disruption Map:** A stratified sample of critical events across Bengaluru.
-2. **Response Recommendation Engine:** Simulates event outcomes (duration, recommended officer deployment) based on historical corridor precedence, prioritizing real-time reportable factors over post-resolution label leakage.
-3. **Post-Event Learning Replay:** Chronological replay of historical events to measure the system's predictive calibration over time.
+---
 
-## Data
+## What It Does
 
-The core dataset used to build and backtest this system is located at [astram_event_data.csv](data/astram_event_data.csv). It contains 8,173 real-world Bengaluru Traffic Police (BTP) incident records.
+| Feature | Description |
+|---|---|
+| **Live Disruption Map** | Stratified sample of historical incidents across Bengaluru, color-coded by severity |
+| **Response Recommendation Engine** | Rule-based prediction using only report-time data (Priority + Corridor Frequency) — no post-resolution leakage |
+| **Post-Event Learning Replay** | Chronological calibration replay showing predicted vs. resolved severity gap over time |
+| **Explainability Panel** | Per-prediction breakdown of score components; flags corridor fallback inline if lookup misses |
+| **Data Limitations Drawer** | Full-screen disclosure of model constraints, logging gaps, and ML confidence |
+
+## Three-Signal Architecture
+
+The system produces three independent severity reads per incident, never blended:
+
+1. **Historical Baseline** (`display_severity_bucket`) — retrospective, based on actual median clearance time for the cause+corridor combination.
+2. **Report-Time Predictive Score** — deterministic rule engine (Priority 57.14% + Corridor Frequency 42.86%), computable at the moment of logging.
+3. **ML Directional Read** (`ml_severity_bucket`) — LightGBM classifier on 6 report-time features; labeled low-confidence and secondary.
+
+## Known Limitations
+
+* **Coarse Bucket Resolution:** 4-bucket output (Low/Medium/High/Critical) built on 2 input signals only, to strictly avoid label leakage.
+* **Low ML Confidence:** Macro-F1 of 0.477 on held-out test split. Kept explicitly secondary to the rule engine.
+* **Chronic Logging Gaps:** ~61% of records lack completion timestamps — only ~39% of events have a resolvable duration for ground-truth labeling.
+
+*See [METHODOLOGY.md](METHODOLOGY.md) for full statistical detail.*
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="frontend/public/screenshots/fallback_warning.jpeg" style="border-radius: 10px; width: 100%;" alt="Explainability Panel showing a triggered corridor-fallback warning" />
+      <br /><sub><b>Explainability Panel & Fallback Disclosure</b><br />Inline warning when corridor lookup misses — prevents silent zero</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="frontend/public/screenshots/three_signals.jpeg" style="border-radius: 10px; width: 100%;" alt="Historical Baseline, Report-Time Predictive, and ML Directional Read side by side" />
+      <br /><sub><b>Three-Signal Architecture Panel</b><br />Historical Baseline · Rule-Based Predictive · ML Directional Read</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="frontend/public/screenshots/timeline_replay.jpeg" style="border-radius: 10px; width: 100%;" alt="Timeline Replay showing predicted vs. resolved severity gap over time" />
+      <br /><sub><b>Post-Event Learning Replay</b><br />Predicted vs. resolved severity gap plotted chronologically</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="frontend/public/screenshots/limitations_sheet.png" style="border-radius: 10px; width: 100%;" alt="Limitations sheet open showing the MAE and coarseness disclosure" />
+      <br /><sub><b>Data Limitations & Disclosures</b><br />Full-screen disclosure of model constraints and logging gaps</sub>
+    </td>
+  </tr>
+</table>
+
+Dataset: [`data/astram_event_data.csv`](data/astram_event_data.csv) — 8,173 real-world BTP incident records. No synthetic or simulated rows in the training or calibration pipeline.
 
 ## Data Pipeline & Artifacts
 
-The system relies on a sequence of Python scripts in `data-pipeline/` to clean the raw dataset, compute historical severity scores, generate rule-based predictive cutoffs, and train the LightGBM machine learning model.
+<!-- ARCHITECTURE DIAGRAM:
+Data Pipeline (run in order from project/data-pipeline/):
+  1. clean.py          — Validates, normalizes raw CSV, derives duration fields → cleaned_data.parquet
+  2. severity_score.py — Computes historical severity bucket from clearance time → scored_data.parquet, corridor_lookup.json
+  3. predictive_score.py — Builds rule-engine cutoffs from report-time features only → predictive_cutoffs.json, predicted_data.parquet
+  4. calibration_ledger.py — Replays incidents chronologically to compute predicted vs resolved error → calibration_ledger.parquet, calibration_summary.json
+  5. train_model.py    — Trains LightGBM on 6 report-time features, no leakage → model.pkl, feature_importance.json, model_confidence.json
+  6. validate.py       — Gate check on all artifacts before serving
+All outputs go to: data-pipeline/artifacts/
+Backend: FastAPI (port 8000) loads artifacts at startup, serves /api/predict, /api/events, /api/calibration
+Frontend: Next.js 16 App Router (port 3000) proxies /api to FastAPI
+-->
+
+<div style="display: flex; justify-content: center;">
+<img src="frontend/public/screenshots/architecture_diagram.png" style="border-radius: 12px; height: 500px;" alt="Gridlock Data Pipeline Architecture — raw CSV through data pipeline scripts to artifacts, consumed by FastAPI backend and Next.js frontend">
+</div>
 
 To run the pipeline from scratch:
 ```bash
 cd project/data-pipeline
-python clean.py
-python severity_score.py
-python predictive_score.py
-python calibration_ledger.py
-python train_model.py
-python validate.py
+uv run python clean.py
+uv run python severity_score.py
+uv run python predictive_score.py
+uv run python calibration_ledger.py
+uv run python train_model.py
+uv run python validate.py
 ```
 
-This pipeline generates several pre-computed `artifacts/` (JSON and Parquet files) that the FastAPI backend loads into memory on startup. Key artifacts include:
-- `cleaned_data.parquet`: The standardized historical ledger.
-- `predictive_cutoffs.json`: Thresholds and corridor frequencies for the rule-based Engine.
-- `model.pkl`: The trained LightGBM model for the directional read.
-- `calibration_ledger.json` & `calibration_summary.json`: Used by the frontend Timeline Replay to plot the gap between predicted vs. resolved severity.
+Key artifacts generated:
+- `cleaned_data.parquet` — standardized historical ledger
+- `predictive_cutoffs.json` — corridor frequencies and rule-engine thresholds
+- `model.pkl` — trained LightGBM model
+- `calibration_ledger.json` & `calibration_summary.json` — Timeline Replay data
 
-## Setup Instructions
+## Setup
 
-### 1. Backend Setup
-
-The data pipeline and backend use `uv` as the package manager to avoid polluting your global Python environment.
+### Backend
 
 ```bash
 cd project
-# Run the FastAPI server
+uv sync          # install all Python dependencies
 uv run uvicorn backend.main:app --port 8000
 ```
 
-### 2. Frontend Setup
-
-The frontend uses Next.js 16 App Router, styled with Tailwind CSS and Shadcn/ui.
+### Frontend
 
 ```bash
 cd project/frontend
@@ -59,15 +117,11 @@ pnpm install
 pnpm run dev
 ```
 
-### 3. Environment Variables
+### Environment Variables
 
-By default, the Next.js frontend will proxy `/api` requests to `http://127.0.0.1:8000`. This is a convenience for local testing.
-
-If you deploy the backend somewhere else (e.g. Vercel, Render), you must set the `BACKEND_URL` environment variable for the frontend to rewrite the requests correctly.
-
-Example:
+The Next.js frontend proxies `/api` to `http://127.0.0.1:8000` by default. To point at a remote backend:
 
 ```env
 # .env.local
-BACKEND_URL=https://my-hosted-fastapi-backend.com
+BACKEND_URL=https://your-backend-url.com
 ```

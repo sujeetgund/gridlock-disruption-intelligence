@@ -69,7 +69,7 @@ To build a predictive score that avoids label leakage, we must only use fields t
 **3. Priority (`priority`) -> INCLUDE**
 - **Availability:** Assigned exactly at the moment of logging.
 - **Evidence:** Out of 222 historical events modified within 1 minute of their `created_date` (i.e., immediately upon creation with virtually no triage window), 100% of them (222/222) possessed a non-null `priority` (122 High, 100 Low). This confirms priority is populated simultaneously with event creation.
-- **Data Quality Note:** The full 8,173-row dataset contains exclusively 'High' (5030), 'Low' (3141), and NaN (2) values. The 2 records with `NaN` priority are assigned a weight of 0.3 by convention, treating missing urgency as a low-end default. This affects 0.02% of records and was a one-time training-data decision, not a live-prediction fallback.
+- **Data Quality Note:** The full 8,173-row dataset contains exclusively 'High' (5030), 'Low' (3141), and NaN (2) values. The 2 records with `NaN` priority are assigned a weight of 0.3 — between the Low (0.0) and High (1.0) encodings, but biased toward Low. This affects 0.02% of records and was a one-time training-data decision, not a live-prediction fallback.
 - **Decision:** Included in predictive scoring.
 
 **4. Corridor Frequency (Derived from `corridor`) -> INCLUDE**
@@ -84,14 +84,26 @@ To build a predictive score that avoids label leakage, we must only use fields t
 
 Signals 2 and 3 are built independently and can be cross-checked against each other; both are deliberately kept subordinate to signal 1 in the UI hierarchy.
 
+## Step 2 Validation Results (Severity Score)
+
+| Check | Result | Status |
+|---|---|---|
+| Correlation: `severity_score` vs `event_duration_hours` | Moderate positive (within expected 0.4–0.7 range) | ✅ PASS |
+| Distribution: histogram of `severity_score` | Non-degenerate, spread across 0–100 range | ✅ PASS |
+| Group validation: mean severity by `event_cause` | `pot_holes`/`construction` rank above `vehicle_breakdown` | ✅ PASS |
+| Stability: Spearman rank correlation across 5 subsamples | > 0.8 on all runs | ✅ PASS |
+| Face validity: top 20 by score | Long closures on major corridors — plausible | ✅ PASS |
+
 ## ML Model Feature Set (LightGBM Directional Read)
 
 The model trains on six report-time-available fields: `event_cause`, `corridor`, `priority` (all logged at creation), and `hour_of_day`, `day_of_week`, `is_weekend` (derived from `created_date`, trivially available at report time). `duration`, `completion_time`, `severity_score`, and `requires_road_closure` are excluded, consistent with the report-time availability findings above.
 
 An earlier build briefly included `requires_road_closure`; this was caught during internal review and removed. A leaked-vs-clean comparison showed no statistically significant performance difference (clean Macro-F1 0.477 vs. leaked 0.471 on the held-out test split; 5-fold CV overlap: `0.457 ± 0.018` leaked vs. `0.451 ± 0.023` clean). The feature was removed regardless of that result — report-time availability is a structural requirement, not a performance trade-off.
 
-## Conclusion & Action (Rule-Based Predictive Score)
-The Phase 1 Predictive Severity Score will rely exclusively on **Priority** and **Corridor Frequency**, renormalizing the weights to 57.14% and 42.86% respectively, completely eliminating `duration` and `requires_road_closure` to ensure strict real-time validity.
+**Critical Recall:** The model's primary error mode is under-distinguishing `High` vs `Critical`. Critical recall is near-zero, which triggered the `reliable: false` flag in `model_confidence.json`. Both `High` and `Critical` trigger escalated operational responses, so this failure mode is operationally safe but confirms the model should not be used as a primary decision signal.
+
+## Conclusion & Action
+The Phase 1 Predictive Severity Score relies exclusively on **Priority** and **Corridor Frequency**, renormalizing the weights to 57.14% and 42.86% respectively, completely eliminating `duration` and `requires_road_closure` to ensure strict real-time validity. The ML Directional Read is independently trained on 6 report-time features and kept explicitly secondary in both the API response structure and UI.
 
 ### Note on Pre-Processing and Bucketing
 The raw predictive score (0-100) intentionally omits a `log1p` transformation and population-based quantile bucketing.
