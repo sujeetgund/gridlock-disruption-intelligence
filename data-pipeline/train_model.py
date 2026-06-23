@@ -24,7 +24,6 @@ def main():
         'event_cause', 
         'corridor', 
         'priority', 
-        'requires_road_closure', 
         'hour_of_day', 
         'day_of_week', 
         'is_weekend'
@@ -36,10 +35,10 @@ def main():
         print(f" - {f}")
     print("Target variable:")
     print(f" - {target}")
-    print("\nConfirmed: No duration, completion_time, or severity_score features are included.")
+    print("\nConfirmed: No duration, completion_time, severity_score, or requires_road_closure features are included.")
     
     # Convert categorical columns to 'category' dtype for LightGBM
-    categorical_features = ['event_cause', 'corridor', 'priority', 'requires_road_closure']
+    categorical_features = ['event_cause', 'corridor', 'priority']
     for col in categorical_features:
         df_valid[col] = df_valid[col].astype('category')
         

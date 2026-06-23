@@ -75,14 +75,13 @@ def predict_severity(req: PredictRequest):
             'event_cause': cause,
             'corridor': corr,
             'priority': req.priority,
-            'requires_road_closure': req.requires_road_closure,
             'hour_of_day': req.hour_of_day,
             'day_of_week': req.day_of_week,
             'is_weekend': 1 if req.day_of_week >= 5 else 0
         }])
         
         # Cast categorical types exactly as trained
-        for col in ['event_cause', 'corridor', 'priority', 'requires_road_closure']:
+        for col in ['event_cause', 'corridor', 'priority']:
             input_data[col] = input_data[col].astype('category')
             
         try:

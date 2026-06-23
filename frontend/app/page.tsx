@@ -6,8 +6,6 @@ import SimulateDisruptionForm from "@/components/SimulateDisruptionForm";
 import LimitationsSheet from "@/components/LimitationsSheet";
 import TimelineReplay from "@/components/TimelineReplay";
 
-export const dynamic = 'force-dynamic';
-
 async function getMapEvents() {
   const res = await fetch(`${getBackendUrl()}/api/events/map`, { cache: 'no-store' });
   if (!res.ok) return [];
@@ -31,6 +29,35 @@ async function getTimelineData() {
   const res = await fetch(`${getBackendUrl()}/api/calibration/timeline/global`, { cache: 'no-store' });
   if (!res.ok) return [];
   return res.json();
+}
+
+async function getCalibrationSummary() {
+  const res = await fetch(`${getBackendUrl()}/api/calibration/summary`, { cache: 'no-store' });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+async function CalibrationHeadline() {
+  const summary = await getCalibrationSummary();
+  if (!summary || !summary.system_wide_trend) return null;
+  
+  const { trend_eligible_corridors, system_wide_trend } = summary;
+  
+  let headlineText = "";
+  if (system_wide_trend.status === "flat") {
+    headlineText = `Across ${trend_eligible_corridors} eligible corridors, predictive accuracy held steady regardless of incident volume — corridor-level factors appear to dominate over pure count-based learning.`;
+  } else if (system_wide_trend.status === "improving") {
+    headlineText = `Across ${trend_eligible_corridors} eligible corridors, the gap between predicted and resolved severity narrowed by ${Math.abs(system_wide_trend.error_pct_change).toFixed(1)}%.`;
+  } else {
+    headlineText = `Across ${trend_eligible_corridors} eligible corridors, the predictive-to-resolved gap widened by ${Math.abs(system_wide_trend.error_pct_change).toFixed(1)}%.`;
+  }
+
+  return (
+    <div className="bg-muted/30 border-l-4 border-[#002aff] p-4 rounded-r-[2px] mt-6 max-w-3xl">
+      <h3 className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground mb-1">System-Wide Calibration Trend</h3>
+      <p className="text-[16px] text-foreground font-medium">{headlineText}</p>
+    </div>
+  );
 }
 
 async function MapSection() {
@@ -121,6 +148,9 @@ export default async function DashboardPage() {
               <p className="text-[16px] text-muted-foreground mt-2 max-w-3xl">
                 Chronological replay of historical events to measure the system's predictive calibration over time.
               </p>
+              <Suspense fallback={<div className="h-[60px]"></div>}>
+                <CalibrationHeadline />
+              </Suspense>
             </div>
           </div>
           <Suspense fallback={<div className="w-full h-[600px] bg-muted animate-pulse rounded-[2px]"></div>}>
